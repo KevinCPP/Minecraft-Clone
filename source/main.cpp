@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "../include/Camera.h"
 #include "../include/Texture.h"
 #include "../include/Renderer.h"
 #include "../include/IndexBuffer.h"
@@ -14,6 +15,7 @@
 #include "../include/VertexBufferLayout.h"
 
 #include "../include/stb_image.h"
+
 
 int main() {
     // window object
@@ -128,22 +130,46 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
     glm::mat4 mvp = projection * view * model;
 
+    Camera cam;
+    cam.setSensitivity(4.0f);
+
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
     while(!glfwWindowShouldClose(window)) {
         renderer.clear();
         glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-    
-        // rotate model matrix
-        model = glm::rotate(model, glm::radians(2.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            cam.processKeyboardInput(Camera::Direction::FRONT, deltaTime);
+        if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            cam.processKeyboardInput(Camera::Direction::RIGHT, deltaTime);
+        if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            cam.processKeyboardInput(Camera::Direction::BACK, deltaTime);
+        if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            cam.processKeyboardInput(Camera::Direction::LEFT, deltaTime);
+        if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+            cam.processKeyboardInput(Camera::Direction::UP, deltaTime);
+        if(glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+            cam.processKeyboardInput(Camera::Direction::DOWN, deltaTime);
+        
+        if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+            cam.processMouseMovement(0, 1);
+        if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            cam.processMouseMovement(1, 0);
+        if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+            cam.processMouseMovement(0, -1);
+        if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+            cam.processMouseMovement(-1, 0);
 
         // update MVP matrix
-        mvp = projection * view * model;
+        mvp = projection * cam.getViewMatrix() * model;
         
         shader.setUniformMat4f("uMVPMatrix", mvp);
 
-        //glBindVertexArray(vao);
-        //glBindTexture(GL_TEXTURE_2D, texture);
-        //glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
-        //glBindVertexArray(0);
 
         renderer.draw(va, ib, shader);
 
