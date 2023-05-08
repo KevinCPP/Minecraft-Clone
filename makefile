@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic -I include
+CXXFLAGS = -std=c++20 -g -Wall -Wextra -pedantic -I include
 LDLIBS = -lGLEW -lglfw -lGL
 
 SRC_DIR = source
