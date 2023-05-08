@@ -12,6 +12,7 @@ private:
     int m_Width, m_Height, m_BPP;
 
 public:
+    Texture();
     Texture(const std::string& path);
     ~Texture();
 

@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "../include/Vertex.h"
 #include "../include/Camera.h"
 #include "../include/Texture.h"
 #include "../include/Renderer.h"
@@ -52,6 +53,7 @@ int main() {
     const size_t nVertices = 4 * 6;
     const size_t vertexSize = 5;
 
+    /*
     // layout: x y z u v
     float vertices[nVertices * vertexSize] = {
         // face 1 (front)
@@ -90,7 +92,44 @@ int main() {
          0.5,  0.5,  0.5, 1, 1, // top right
          0.5,  0.5, -0.5, 1, 0 // bottom right
     };
-    
+    */
+
+    float scale = 0.1f;
+
+    Vertex<vertexSize> vertices[nVertices] = {
+        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 1),
+        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
+        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 1, 1),
+        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale, 1, 0),
+        
+        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 1),
+        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
+        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
+        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 1, 0),
+        
+        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 0, 1),
+        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 0, 0),
+        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
+        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 1, 0),
+        
+        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 1),
+        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
+        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
+        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 1, 0),
+        
+        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 0, 1),
+        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
+        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 1, 1),
+        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale, 1, 0),
+        
+        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 0, 1),
+        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 0),
+        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
+        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 1, 0),
+    };
+
+
+
     const size_t nIndices = 6 * 6;
 
     unsigned int indices[nIndices] = {
@@ -104,7 +143,7 @@ int main() {
     
 
     VertexArray va;
-    VertexBuffer vb(vertices, nVertices * vertexSize * sizeof(float));
+    VertexBuffer vb(&vertices[0].data[0], nVertices * vertexSize * sizeof(float));
 
     VertexBufferLayout layout;
     layout.push_float(3);
@@ -118,7 +157,7 @@ int main() {
 
     Renderer renderer;
 
-    Texture texture("resources/textures/Bricks.png");
+    Texture texture("resources/textures/bricks.bmp");
     texture.bind(0); 
     
     shader.setUniform1i("uTexture", 0);
@@ -132,6 +171,7 @@ int main() {
 
     Camera cam;
     cam.setSensitivity(4.0f);
+    cam.setMovementSpeed(0.5f);
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;

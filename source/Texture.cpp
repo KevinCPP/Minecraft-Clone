@@ -2,6 +2,10 @@
 
 #include "../include/stb_image.h"
 
+const std::string DEFAULT_TEXTURE_FILE_PATH = "resources/textures/atlas.bmp";
+
+Texture::Texture() : Texture(DEFAULT_TEXTURE_FILE_PATH) { }
+
 Texture::Texture(const std::string& path) {
     m_FilePath = path;
     m_LocalBuffer = nullptr;
@@ -22,8 +26,8 @@ Texture::Texture(const std::string& path) {
     GLCall(glGenTextures(1, &m_RendererID));
     GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     //_S will stretch, _T will tile
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
