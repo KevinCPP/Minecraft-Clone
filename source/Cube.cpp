@@ -2,52 +2,54 @@
 
 namespace Geometry {
 
-    const std::array<Vertex, VERTICES_PER_CUBE> DEFAULT_VERTICES = {
-        // front
-        Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
-        Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
-        Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
-        Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
+    namespace {
+        const std::array<Vertex, VERTICES_PER_CUBE> DEFAULT_VERTICES = {
+            // front
+            Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
+            Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
+            Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
 
-        // right side
-        Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
-        Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
-        Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
-        Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
-        
-        // back
-        Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
-        Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
-        Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
-        Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
-        
-        // left side
-        Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
-        Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
-        Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
-        Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
-        
-        // bottom
-        Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
-        Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
-        Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
-        Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
-        
-        // top
-        Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
-        Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
-        Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
-        Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
-    };
+            // right side
+            Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
+            Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
+            Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
+            Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
+            
+            // back
+            Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
+            Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
+            Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
+            
+            // left side
+            Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
+            Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
+            
+            // bottom
+            Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
+            Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
+            Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
+            
+            // top
+            Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
+            Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
+            Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
+            Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
+        };
 
-    const std::array<Quad, QUADS_PER_CUBE> DEFAULT_QUADS = {
-        Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 0),
-        Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 1),
-        Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 2),
-        Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 3),
-        Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 4),
-        Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 5),
-    };
+        const std::array<Quad, QUADS_PER_CUBE> DEFAULT_QUADS = {
+            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 0),
+            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 1),
+            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 2),
+            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 3),
+            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 4),
+            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 5),
+        };
+    }
 
     Cube::Cube() {
         Reset();
