@@ -12,13 +12,20 @@
 #include "../include/Renderer.h"
 #include "../include/IndexBuffer.h"
 #include "../include/VertexArray.h"
+#include "../include/TextureAtlas.h"
 #include "../include/VertexBuffer.h"
 #include "../include/VertexBufferLayout.h"
 
 #include "../include/stb_image.h"
 
+#include "../test/test.h"
 
 int main() {
+
+#ifdef ENABLE_TESTS
+    testQuads();
+#endif
+
     // window object
     GLFWwindow *window;
 
@@ -95,7 +102,8 @@ int main() {
     */
 
     float scale = 0.1f;
-
+    
+    /*
     Vertex<vertexSize> vertices[nVertices] = {
         Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 1),
         Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
@@ -127,7 +135,40 @@ int main() {
         Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
         Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 1, 0),
     };
+    */
 
+    scale = 0.5f;
+    Vertex<vertexSize> vertices[nVertices] = {
+        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale,    0, 0.5 ),
+        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale,    0, 0.25),
+        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 0.25, 0.5 ),
+        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale, 0.25, 0.25),
+        
+        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale,    0, 0.5 ),
+        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale,    0, 0.25),
+        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
+        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 0.25, 0.25),
+        
+        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale,    0, 0.5 ),
+        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale,    0, 0.25),
+        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
+        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 0.25, 0.25),
+        
+        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale,    0, 0.5 ),
+        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale,    0, 0.25),
+        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
+        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 0.25, 0.25),
+        
+        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
+        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0.25, 0.25),
+        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale,  0.5, 0.5 ),
+        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale,  0.5, 0.25),
+        
+        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
+        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0.25, 0.25),
+        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale,  0.5, 0.5 ),
+        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale,  0.5, 0.25),
+    };
 
 
     const size_t nIndices = 6 * 6;
@@ -157,9 +198,11 @@ int main() {
 
     Renderer renderer;
 
-    Texture texture("resources/textures/bricks.bmp");
-    texture.bind(0); 
+    //Texture texture("resources/textures/atlas.bmp");
+    //texture.bind(0); 
     
+    TextureAtlas texture("resources/textures/atlas.bmp", 4, 4);
+
     shader.setUniform1i("uTexture", 0);
 
     glEnable(GL_DEPTH_TEST);

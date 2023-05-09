@@ -1,38 +1,51 @@
 CXX = g++
-CXXFLAGS = -std=c++20 -g -Wall -Wextra -pedantic -I include
-LDLIBS = -lGLEW -lglfw -lGL
+CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic -Iinclude
+LDFLAGS =
+LIBS = -lGLEW -lglfw -lGL
+SRCDIR = source
+INCDIR = include
+BUILDDIR = build
+TESTDIR = test
+TARGET = app
+TARGET_TEST = test_app
+SRC_EXT = cpp
 
-SRC_DIR = source
-INC_DIR = include
-TEST_DIR = test
-BUILD_DIR = build
+# Recursively find all source files and corresponding object files
+SRCS = $(shell find $(SRCDIR) -type f -name *.$(SRC_EXT))
+OBJS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRCS:.$(SRC_EXT)=.o))
 
-# Find all source files in source directory
-SOURCES := $(shell find $(SRC_DIR) -name '*.cpp')
-# Create a list of object files from the source files
-OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(SOURCES:.cpp=.o)))
-# Create a list of dependencies for each object file
-DEPS := $(OBJECTS:.o=.d)
+# Recursively find all test source files and corresponding object files
+TEST_SRCS = $(shell find $(TESTDIR) -type f -name *.$(SRC_EXT))
+TEST_OBJS = $(patsubst $(TESTDIR)/%,$(BUILDDIR)/%,$(TEST_SRCS:.$(SRC_EXT)=.o))
 
-# Compile all object files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+# Default target
+all: $(TARGET)
+
+# Compile the main target
+$(TARGET): $(OBJS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+# Compile the test target
+$(TARGET_TEST): CXXFLAGS += -DENABLE_TEST
+$(TARGET_TEST): $(OBJS) $(TEST_OBJS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+# Compile object files
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRC_EXT)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Link object files into executable
-app: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(LDLIBS) $^ -o $@
+# Compile test object files
+$(BUILDDIR)/%.o: $(TESTDIR)/%.$(SRC_EXT)
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Compile all test files
-tests: $(wildcard $(TEST_DIR)/*.cpp) $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(LDLIBS) $^ -o $@
+# Test target
+test: $(TARGET_TEST)
 
-.PHONY: clean
-
-# Remove all object files and executable
+# Clean up
 clean:
-	$(RM) $(BUILD_DIR)/*.o $(BUILD_DIR)/*.d app tests
+	rm -rf $(BUILDDIR) $(TARGET) $(TARGET_TEST)
 
-# Include dependency files
--include $(DEPS)
+.PHONY: all test clean
 

@@ -4,11 +4,12 @@
 #include "Texture.h"
 
 #include <glm/glm.hpp>
+#include <memory>
 
 class TextureAtlas {
 private: 
     // member variables
-    Texture texAtlas;                   // stores the actual image that will be used as the atlas
+    std::unique_ptr<Texture> texAtlas;  // stores the actual image that will be used as the atlas
     unsigned int numCols, numRows;      // stores how many columns and rows of individual textures are in the atlas
 public:
     // default constructor (will initialize member variables to defaults)
