@@ -1,4 +1,5 @@
 #include "../include/TextureAtlas.h"
+#include <iomanip>
 
 const unsigned int DEFAULT_COLS = 1;
 const unsigned int DEFAULT_ROWS = 1;
@@ -36,10 +37,13 @@ void TextureAtlas::setTextureAtlasImage(const std::string& filePath, unsigned in
 glm::vec2 TextureAtlas::getTextureCoords(unsigned int x, unsigned int y) const {
     glm::vec2 coords(0.0f, 0.0f);
 
-    if(x < numCols && y < numRows) {
+    if(x <= numCols && y <= numRows) {
         coords.x = (1.0f / numCols) * x;
         coords.y = (1.0f / numRows) * y;
     }
+
+    using namespace std;
+    std::cout << "getTextureCoords: " << setw(6) << coords.x << setw(6) << coords.y << std::endl;
 
     return coords;
 }

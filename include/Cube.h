@@ -8,7 +8,23 @@ namespace Geometry {
 
     struct Cube {
         // underlying data structure for a cube
-        std::array<Quad, QUADS_PER_CUBE> quads;
+        Quad quads[QUADS_PER_CUBE];
+
+        static const uint8_t TOP        = 0b00100000;
+        static const uint8_t LEFT       = 0b00001000;
+        static const uint8_t BACK       = 0b00000100;
+        static const uint8_t RIGHT      = 0b00000010;
+        static const uint8_t FRONT      = 0b00000001;
+        static const uint8_t BOTTOM     = 0b00010000;
+
+        static constexpr std::array<unsigned int, 36> indices = {
+             0,  1,  2,  2,  1,  3, // renders front face
+             4,  5,  6,  6,  5,  7, // renders right face 
+             8,  9, 10, 10,  9, 11, // renders back face
+            12, 13, 14, 14, 13, 15, // renders left face
+            16, 17, 18, 18, 17, 19, // renders bottom face
+            20, 21, 22, 22, 21, 23  // renders top face
+        };
 
         // creates a default cube with scale = 1
         Cube();
@@ -25,19 +41,8 @@ namespace Geometry {
         Cube(const glm::vec3& offset);
         Cube(const glm::vec4& offsetAndScale);
 
-        // Will accept coordinates of the cube relative to the camera, then the max coordinates
-        // so that it can be converted into normalized device coordinates in the constructor
-        Cube(float X, float Y, float Z, float maxX, float maxY, float maxZ);
-
-        // Will create a cube with normalized device coordinates, and scaled about the center of the cube.
-        Cube(float X, float Y, float Z, float scale, float maxX, float maxY, float maxZ);
-
-        // same thing as previous two, but accepts glm vectors instead of floats
-        Cube(const glm::vec3& position, const glm::vec3& maxPosition);
-        Cube(const glm::vec4& positionAndScale, const glm::vec3& maxPosition);
-
         // accepts an array of quads so a cube can be made manually by the user
-        Cube(std::array<Quad, 6> quads);
+        Cube(std::array<Quad, 6> quadArr);
 
         // resets the cube to default cube
         void Reset();
@@ -67,17 +72,59 @@ namespace Geometry {
         void setPositionAndScale(float X, float Y, float Z, float scale);
         void setPositionAndScale(const glm::vec4& positionAndScale);
 
-        // sets the cube to normalized device coordinates relative to the maxX, maxY, and maxZ
-        void setNormalizedDeviceCoordinates(float maxX, float maxY, float maxZ);
-        void setNormalizedDeviceCoordinates(const glm::vec3& maxPosition);
+        // sets the cube to normalized device coordinates relative to the maxDist
+        void setNormalizedDeviceCoordinates(float maxDist);
 
         // returns the center coordinate of the cube
         glm::vec3 getCenter();
 
         // converts a cube into an array of floats (raw vertex data)
-        std::array<float, FLOATS_PER_CUBE> getFloatArray(); 
+        std::tuple<float*, size_t> floats(); 
+    
+        // set bottom corner position rather than setting position by the center
+        void setBottomCornerPosition(float X, float Y, float Z);
+        void setBottomCornerPosition(const glm::vec3& position);
+
+        // returns the bottom corner position
+        glm::vec3 getBottomCornerPosition();
+
+        // sets the texture coordinates for every cube face
+        void setAllTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        
+        // sets the texture coordinates for individual faces
+        void setTopTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        void setBackTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        void setLeftTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        void setRightTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        void setFrontTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        void setBottomTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        
+        // sets the texture coords for all the side faces
+        void setSidesTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+        
+        // sets the texture coords for both the top and bottom
+        void setTopBottomTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+
+        // sets the texture coords for the flagged sides (example: FLAGS = Cube::TOP | Cube::LEFT)
+        void setFlagsTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint8_t FLAGS);
     };
 
+    // converts an array of cubes into an array of floats 
+    inline std::tuple<float*, size_t> getFloatArray(Cube* cubes, size_t numCubes) {
+        return std::make_tuple((float*)cubes, numCubes * FLOATS_PER_CUBE);
+    }
+
+    inline std::tuple<unsigned int*, size_t> getIndicesArray(Cube* cubes, size_t numCubes) {
+        unsigned int* indexBuff = (unsigned int*)malloc(numCubes * 36 * sizeof(unsigned int));
+        for(size_t i = 0; i < numCubes; i++) {
+            for(size_t j = 0; j < 36; j++) {
+                size_t c = j + (i * 36);
+                indexBuff[c] = (24 * i) + Cube::indices[j];
+            }
+        }
+
+        return std::make_tuple(indexBuff, numCubes * 36);
+    }
 }
 
 #endif 

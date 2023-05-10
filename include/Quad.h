@@ -10,8 +10,11 @@ namespace Geometry {
 
     struct Quad {
         // a quad is just 4 vertices
-        std::array<Vertex, VERTICES_PER_QUAD> vertices;
-        
+        Vertex vertices[VERTICES_PER_QUAD];
+
+        // indices for rendering a quad
+        static constexpr std::array<unsigned int, 6> indices = { 0, 1, 2, 2, 1, 3 };
+
         // constructors
         Quad() = default;
         Quad(std::initializer_list<Vertex> list);
@@ -24,9 +27,6 @@ namespace Geometry {
         // two slots in the texture atlas. Useful for any blocks (paintings?) that are multiple blocks wide/tall.
         void setTextureCoordsFromAtlas(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-        // returns the indices for an index buffer
-        std::array<unsigned int, 6> getIndices();
-
         void addOffset(float X, float Y, float Z);
         void addOffsetAndScale(float X, float Y, float Z, float scale);
 
@@ -34,5 +34,9 @@ namespace Geometry {
         void addOffsetAndScale(const glm::vec4& offsetAndScale);
     };
 
+    // returns a tuple with an array of floats, and the size of the array
+    inline std::tuple<float*, size_t> getFloatArray(Quad* quads, size_t numQuads) {
+        return std::make_tuple((float*)quads, numQuads * FLOATS_PER_QUAD);
+    }
 }
 #endif

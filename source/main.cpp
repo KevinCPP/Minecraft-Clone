@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "../include/Cube.h"
+#include "../include/Quad.h"
 #include "../include/Vertex.h"
 #include "../include/Camera.h"
 #include "../include/Texture.h"
@@ -19,6 +21,8 @@
 #include "../include/stb_image.h"
 
 #include "../test/test.h"
+
+using namespace Geometry;
 
 int main() {
 
@@ -57,141 +61,27 @@ int main() {
     // print the OpenGL version
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    const size_t nVertices = 4 * 6;
-    const size_t vertexSize = 5;
-
-    /*
-    // layout: x y z u v
-    float vertices[nVertices * vertexSize] = {
-        // face 1 (front)
-        -0.5,  0.5, -0.5, 0, 1, // top left
-        -0.5, -0.5, -0.5, 0, 0, // bottom left
-         0.5,  0.5, -0.5, 1, 1, // top right
-         0.5, -0.5, -0.5, 1, 0, // bottom right
-    
-        // face 2 (right side)
-         0.5,  0.5, -0.5, 0, 1, // top left
-         0.5, -0.5, -0.5, 0, 0, // bottom left
-         0.5,  0.5,  0.5, 1, 1, // top right
-         0.5, -0.5,  0.5, 1, 0, // bottom right
-
-        // face 3 (back) <same as front, but positive z coords
-        -0.5,  0.5,  0.5, 0, 1, // top left
-        -0.5, -0.5,  0.5, 0, 0, // bottom left
-         0.5,  0.5,  0.5, 1, 1, // top right
-         0.5, -0.5,  0.5, 1, 0, // bottom right
-
-        // face 4 (left side)
-        -0.5,  0.5, -0.5, 0, 1, // top left
-        -0.5, -0.5, -0.5, 0, 0, // bottom left
-        -0.5,  0.5,  0.5, 1, 1, // top right
-        -0.5, -0.5,  0.5, 1, 0, // bottom right
-
-        // face 5 (bottom)
-        -0.5, -0.5,  0.5, 0, 1, // top left
-        -0.5, -0.5, -0.5, 0, 0, // bottom left
-         0.5, -0.5,  0.5, 1, 1, // top right
-         0.5, -0.5, -0.5, 1, 0, // bottom right
-
-        // face 6 (top)
-        -0.5,  0.5,  0.5, 0, 1, // top left
-        -0.5,  0.5, -0.5, 0, 0, // bottom left
-         0.5,  0.5,  0.5, 1, 1, // top right
-         0.5,  0.5, -0.5, 1, 0 // bottom right
-    };
-    */
-
     float scale = 0.1f;
     
-    /*
-    Vertex<vertexSize> vertices[nVertices] = {
-        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 1),
-        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
-        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 1, 1),
-        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale, 1, 0),
-        
-        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 1),
-        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
-        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
-        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 1, 0),
-        
-        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 0, 1),
-        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 0, 0),
-        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
-        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 1, 0),
-        
-        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 1),
-        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
-        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
-        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 1, 0),
-        
-        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 0, 1),
-        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0, 0),
-        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 1, 1),
-        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale, 1, 0),
-        
-        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 0, 1),
-        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0, 0),
-        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 1, 1),
-        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 1, 0),
-    };
-    */
+    Cube cubes[256];
+    TextureAtlas texture("resources/textures/atlas.bmp", 4, 4);
 
-    scale = 0.5f;
-    Vertex<vertexSize> vertices[nVertices] = {
-        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale,    0, 0.5 ),
-        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale,    0, 0.25),
-        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale, 0.25, 0.5 ),
-        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale, 0.25, 0.25),
-        
-        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale,    0, 0.5 ),
-        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale,    0, 0.25),
-        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
-        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 0.25, 0.25),
-        
-        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale,    0, 0.5 ),
-        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale,    0, 0.25),
-        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
-        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale, 0.25, 0.25),
-        
-        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale,    0, 0.5 ),
-        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale,    0, 0.25),
-        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
-        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 0.25, 0.25),
-        
-        Vertex<5>(-0.5 * scale, -0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
-        Vertex<5>(-0.5 * scale, -0.5 * scale, -0.5 * scale, 0.25, 0.25),
-        Vertex<5>( 0.5 * scale, -0.5 * scale,  0.5 * scale,  0.5, 0.5 ),
-        Vertex<5>( 0.5 * scale, -0.5 * scale, -0.5 * scale,  0.5, 0.25),
-        
-        Vertex<5>(-0.5 * scale,  0.5 * scale,  0.5 * scale, 0.25, 0.5 ),
-        Vertex<5>(-0.5 * scale,  0.5 * scale, -0.5 * scale, 0.25, 0.25),
-        Vertex<5>( 0.5 * scale,  0.5 * scale,  0.5 * scale,  0.5, 0.5 ),
-        Vertex<5>( 0.5 * scale,  0.5 * scale, -0.5 * scale,  0.5, 0.25),
-    };
-
-
-    const size_t nIndices = 6 * 6;
-
-    unsigned int indices[nIndices] = {
-         0,  1,  2,  2,  1,  3,
-         4,  5,  6,  6,  5,  7,
-         8,  9, 10, 10,  9, 11,
-        12, 13, 14, 14, 13, 15,
-        16, 17, 18, 18, 17, 19,
-        20, 21, 22, 22, 21, 23
-    };
-    
+    for(size_t i = 0; i < 256; i++) {
+        size_t pass = i / 16;
+        cubes[i].setPosition(i % 16, 1.0f, pass);
+        cubes[i].setNormalizedDeviceCoordinates(16.0f);
+        cubes[i].setAllTextureCoords(&texture, 2, 3, 1, 1);
+    }
 
     VertexArray va;
-    VertexBuffer vb(&vertices[0].data[0], nVertices * vertexSize * sizeof(float));
+    VertexBuffer vb(std::get<0>(getFloatArray(cubes, 256)), std::get<1>(getFloatArray(cubes, 256)) * sizeof(float));
 
     VertexBufferLayout layout;
     layout.push_float(3);
     layout.push_float(2);
     va.addBuffer(vb, layout);
 
-    IndexBuffer ib(indices, nIndices);
+    IndexBuffer ib(std::get<0>(getIndicesArray(cubes, 256)), std::get<1>(getIndicesArray(cubes, 256)));
 
     Shader shader("resources/shaders/basic.shader");
     shader.bind();
@@ -200,8 +90,6 @@ int main() {
 
     //Texture texture("resources/textures/atlas.bmp");
     //texture.bind(0); 
-    
-    TextureAtlas texture("resources/textures/atlas.bmp", 4, 4);
 
     shader.setUniform1i("uTexture", 0);
 
@@ -220,7 +108,7 @@ int main() {
     float lastFrame = 0.0f;
     while(!glfwWindowShouldClose(window)) {
         renderer.clear();
-        glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.35f, 0.8f, 0.95f, 1.0f);
         
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
@@ -260,17 +148,3 @@ int main() {
         glfwPollEvents();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

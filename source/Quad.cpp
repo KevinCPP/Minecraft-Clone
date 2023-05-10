@@ -14,12 +14,13 @@ namespace Geometry {
 
     // Constructor that accepts an array of vertices
     Quad::Quad(const std::array<Vertex, VERTICES_PER_QUAD>& v) {
-        std::copy(v.begin(), v.end(), vertices.begin()); 
+        memcpy(vertices, v.data(), sizeof(Vertex) * VERTICES_PER_QUAD);
     }
 
     // Constructor that accepts a C-Style array of vertices
     Quad::Quad(const Vertex* v) {
-        std::copy(v, v + VERTICES_PER_QUAD, vertices.begin());
+        assert(v != NULL && "Attempting to initialize quad with NULL array!");
+        memcpy(vertices, v, sizeof(Vertex) * VERTICES_PER_QUAD);
     }
 
     // sets the texture coordinates of the vertices in the quad to a specific texture in the atlas.
@@ -27,19 +28,25 @@ namespace Geometry {
     // two texture slots in the texture atlas for a quad that is two blocks wide, for example
     void Quad::setTextureCoordsFromAtlas(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
         assert(VERTICES_PER_QUAD == 4 && "VERTICES_PER_QUAD != 4");
+        
+        std::cout << "Quad Info: " << x << " " << y << " " << width << " " << height << " " << (a == NULL) << std::endl;
 
+        // doesn't work, (2, 4)
         vertices[0].setTextureCoords(a->getTextureCoords(x, y + height));
-        vertices[1].setTextureCoords(a->getTextureCoords(x, y));
-        vertices[2].setTextureCoords(a->getTextureCoords(x + width, y + height));
-        vertices[3].setTextureCoords(a->getTextureCoords(x + width, y));
-    }
+        std::cout << std::setw(6) << vertices[0].getTextureCoords().x << std::setw(6) << vertices[0].getTextureCoords().y << std::endl;
 
-    // returns the order in which vertices should be rendered to render the quad.
-    // can be used with an Index Buffer.
-    std::array<unsigned int, 6> Quad::getIndices() {
-        assert(VERTICES_PER_QUAD == 4 && "VERTICES_PER_QUAD != 4");
-        return {0, 1, 2, 2, 1, 3};
-    }
+        // works, (2, 3)
+        vertices[1].setTextureCoords(a->getTextureCoords(x, y));
+        std::cout << std::setw(6) << vertices[0].getTextureCoords().x << std::setw(6) << vertices[0].getTextureCoords().y << std::endl;
+
+        vertices[2].setTextureCoords(a->getTextureCoords(x + width, y + height));
+        std::cout << std::setw(6) << vertices[0].getTextureCoords().x << std::setw(6) << vertices[0].getTextureCoords().y << std::endl;
+
+        vertices[3].setTextureCoords(a->getTextureCoords(x + width, y));
+        std::cout << std::setw(6) << vertices[0].getTextureCoords().x << std::setw(6) << vertices[0].getTextureCoords().y << std::endl;
+
+        std::cout << std::endl;
+    } 
 
     void Quad::addOffset(float X, float Y, float Z) {
         addOffset(glm::vec3(X, Y, Z)); 

@@ -3,51 +3,51 @@
 namespace Geometry {
 
     namespace {
-        const std::array<Vertex, VERTICES_PER_CUBE> DEFAULT_VERTICES = {
+        const Vertex DEFAULT_VERTICES[VERTICES_PER_CUBE] = {
             // front
             Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
-            Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
-            Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 0),
+            Vertex( 1.0f,  1.0f, -1.0f, 1, 1),
+            Vertex( 1.0f, -1.0f, -1.0f, 1, 0),
 
             // right side
             Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
-            Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
-            Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
-            Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
+            Vertex( 1.0f, -1.0f, -1.0f, 0, 0),
+            Vertex( 1.0f,  1.0f,  1.0f, 1, 1),
+            Vertex( 1.0f, -1.0f,  1.0f, 1, 0),
             
             // back
             Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
-            Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
-            Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f,  1.0f, 0, 0),
+            Vertex( 1.0f,  1.0f,  1.0f, 1, 1),
+            Vertex( 1.0f, -1.0f,  1.0f, 1, 0),
             
             // left side
             Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
-            Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 0),
+            Vertex(-1.0f,  1.0f,  1.0f, 1, 1),
+            Vertex(-1.0f, -1.0f,  1.0f, 1, 0),
             
             // bottom
             Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 1),
-            Vertex( 1.0f, -1.0f,  1.0f, 0, 1),
-            Vertex( 1.0f, -1.0f, -1.0f, 0, 1),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 0),
+            Vertex( 1.0f, -1.0f,  1.0f, 1, 1),
+            Vertex( 1.0f, -1.0f, -1.0f, 1, 0),
             
             // top
             Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
-            Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
-            Vertex( 1.0f,  1.0f,  1.0f, 0, 1),
-            Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
+            Vertex(-1.0f,  1.0f, -1.0f, 0, 0),
+            Vertex( 1.0f,  1.0f,  1.0f, 1, 1),
+            Vertex( 1.0f,  1.0f, -1.0f, 1, 0),
         };
 
-        const std::array<Quad, QUADS_PER_CUBE> DEFAULT_QUADS = {
-            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 0),
-            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 1),
-            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 2),
-            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 3),
-            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 4),
-            Quad(DEFAULT_VERTICES.data() + VERTICES_PER_QUAD * 5),
+        const Quad DEFAULT_QUADS[QUADS_PER_CUBE] = {
+            Quad(DEFAULT_VERTICES + VERTICES_PER_QUAD * 0),
+            Quad(DEFAULT_VERTICES + VERTICES_PER_QUAD * 1),
+            Quad(DEFAULT_VERTICES + VERTICES_PER_QUAD * 2),
+            Quad(DEFAULT_VERTICES + VERTICES_PER_QUAD * 3),
+            Quad(DEFAULT_VERTICES + VERTICES_PER_QUAD * 4),
+            Quad(DEFAULT_VERTICES + VERTICES_PER_QUAD * 5),
         };
     }
 
@@ -55,13 +55,31 @@ namespace Geometry {
         Reset();
     }
 
-    Cube::Cube(float offsetX, float offsetY, float offsetZ) {
+    Cube::Cube(float X, float Y, float Z) {
+        setPosition(X, Y, Z); 
+    }
 
+    Cube::Cube(float X, float Y, float Z, float scale) {
+        setPositionAndScale(X, Y, Z, scale);
+    }
+
+    Cube::Cube(const glm::vec3& position) {
+        setPosition(position);
+    }
+
+    Cube::Cube(const glm::vec4& positionAndScale) {
+        setPositionAndScale(positionAndScale);
+    }
+ 
+    Cube::Cube(std::array<Quad, 6> quadArr) {
+        assert(QUADS_PER_CUBE == 6 && "QUADS_PER_CUBE != 6");
+        memcpy(quads, quadArr.data(), QUADS_PER_CUBE * sizeof(Quad));
     }
 
     // resets the entire cube to default
     void Cube::Reset() {
-        quads = DEFAULT_QUADS;
+        assert((sizeof(DEFAULT_QUADS) == sizeof(quads)) && "DEFAULT_QUADS size doesn't match quads size!");
+        memcpy(quads, DEFAULT_QUADS, QUADS_PER_CUBE * sizeof(Quad));
     }
 
     // resets the positions to defaults
@@ -128,7 +146,7 @@ namespace Geometry {
         
         // reset the cube, so that just adding an offset
         // will essentially be setting the position
-        Reset();
+        ResetPosition();
 
         // add that offset, and re-scale it
         addOffsetAndScale(X, Y, Z, scale);
@@ -139,22 +157,28 @@ namespace Geometry {
         float scale = getScale();
 
         // reset the cube to the origin
-        Reset();
+        ResetPosition();
 
         // add offset and scale to it
         addOffsetAndScale(glm::vec4(position, scale));
     }
 
     void Cube::setPositionAndScale(float X, float Y, float Z, float scale) {
-        Reset();
+        ResetPosition();
         addOffset(X, Y, Z);
         setScale(scale);
     }
 
     void Cube::setPositionAndScale(const glm::vec4& positionAndScale) {
-        Reset();
+        ResetPosition();
         addOffset(glm::vec3(positionAndScale));
         setScale(positionAndScale.w);
+    }
+
+    void Cube::setNormalizedDeviceCoordinates(float maxDist) {
+        float newScale = getScale() / (2.0f * maxDist);
+        glm::vec3 newPos = getCenter() / maxDist;
+        setPositionAndScale(glm::vec4(newPos, newScale));
     }
 
     // returns the center point of the cube
@@ -173,7 +197,67 @@ namespace Geometry {
         return center;
     }
 
-    std::array<float, FLOATS_PER_CUBE> Cube::getFloatArray() {
-        
+    std::tuple<float*, size_t> Cube::floats() {
+        return std::make_tuple((float*)quads, FLOATS_PER_CUBE);
+    }
+
+    // sets the texture coordinates for every cube face
+    void Cube::setAllTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        setSidesTextureCoords(a, x, y, width, height);
+        setTopBottomTextureCoords(a, x, y, width, height);
+    }
+    
+    // sets the texture coordinates for individual faces
+    void Cube::setTopTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        quads[5].setTextureCoordsFromAtlas(a, x, y, width, height); 
+    }
+
+    void Cube::setBackTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        quads[2].setTextureCoordsFromAtlas(a, x, y, width, height); 
+    }
+
+    void Cube::setLeftTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        quads[3].setTextureCoordsFromAtlas(a, x, y, width, height); 
+    }
+
+    void Cube::setRightTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        quads[1].setTextureCoordsFromAtlas(a, x, y, width, height); 
+    }
+
+    void Cube::setFrontTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        quads[0].setTextureCoordsFromAtlas(a, x, y, width, height); 
+    }
+
+    void Cube::setBottomTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        quads[4].setTextureCoordsFromAtlas(a, x, y, width, height); 
+    }
+    
+    // sets the texture coords for all the side faces
+    void Cube::setSidesTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        setBackTextureCoords(a, x, y, width, height);
+        setLeftTextureCoords(a, x, y, width, height);
+        setRightTextureCoords(a, x, y, width, height);
+        setFrontTextureCoords(a, x, y, width, height);
+    }
+    
+    // sets the texture coords for both the top and bottom
+    void Cube::setTopBottomTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+        setTopTextureCoords(a, x, y, width, height);
+        setBottomTextureCoords(a, x, y, width, height);
+    }
+
+    void Cube::setFlagsTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint8_t FLAGS) {
+        if(FLAGS && TOP)
+            setTopTextureCoords(a, x, y, width, height);
+        if(FLAGS && LEFT)
+            setLeftTextureCoords(a, x, y, width, height);
+        if(FLAGS && BACK)
+            setBackTextureCoords(a, x, y, width, height);
+        if(FLAGS && FRONT)
+            setFrontTextureCoords(a, x, y, width, height);
+        if(FLAGS && RIGHT)
+            setRightTextureCoords(a, x, y, width, height);
+        if(FLAGS && BOTTOM)
+            setBottomTextureCoords(a, x, y, width, height);
     }
 }

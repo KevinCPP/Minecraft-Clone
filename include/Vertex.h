@@ -7,7 +7,7 @@
 namespace Geometry {
     struct Vertex {
         // stores the actual vertex data
-        std::array<float, FLOATS_PER_VERTEX> data;
+        float data[FLOATS_PER_VERTEX];
 
         // default constructor
         Vertex() = default;
@@ -40,6 +40,10 @@ namespace Geometry {
         glm::vec3 getPosition() const;
         glm::vec2 getTextureCoords() const;
         glm::vec3 getNormal() const;
-    };
+    }; 
+
+    inline std::tuple<float*, size_t> getFloatArray(Vertex* vertices, const size_t numVertices) {
+        return std::make_tuple((float*)vertices, numVertices * FLOATS_PER_VERTEX);
+    }
 }
 #endif
