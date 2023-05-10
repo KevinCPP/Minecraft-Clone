@@ -173,6 +173,7 @@ namespace Geometry {
         return center;
     }
 
-
-
+    std::array<float, FLOATS_PER_CUBE> Cube::getFloatArray() {
+        
+    }
 }

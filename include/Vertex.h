@@ -7,7 +7,7 @@
 namespace Geometry {
     struct Vertex {
         // stores the actual vertex data
-        std::array<float, VERTEX_SIZE> data;
+        std::array<float, FLOATS_PER_VERTEX> data;
 
         // default constructor
         Vertex() = default;
@@ -15,7 +15,7 @@ namespace Geometry {
         // initializer list constructor. allows for initializer list syntax
         Vertex(std::initializer_list<float> list) {
             auto it = list.begin();
-            for(size_t i = 0; i < VERTEX_SIZE && it != list.end(); ++i, ++it) {
+            for(size_t i = 0; i < FLOATS_PER_VERTEX && it != list.end(); ++i, ++it) {
                 data[i] = *it;
             }
         }
@@ -23,7 +23,7 @@ namespace Geometry {
         // vertex constructor that accepts floats
         template <typename... Args>
         Vertex(Args... args) : data{static_cast<float>(args)...} {
-            static_assert(sizeof...(Args) == VERTEX_SIZE, "Constructor requires exactly N arguments!");
+            static_assert(sizeof...(Args) == FLOATS_PER_VERTEX, "Constructor requires exactly N arguments!");
         }
 
         // setters (floats)

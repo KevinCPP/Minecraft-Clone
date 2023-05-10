@@ -17,32 +17,33 @@
 namespace Geometry {
     
     // vertex constants
-    constexpr size_t VERTEX_SIZE = 5;
+    constexpr size_t FLOATS_PER_VERTEX = 5;
 
     // quad constants
     constexpr size_t VERTICES_PER_QUAD = 4;
-    constexpr size_t FLOATS_PER_QUAD = VERTICES_PER_QUAD * VERTEX_SIZE;
+    constexpr size_t FLOATS_PER_QUAD = VERTICES_PER_QUAD * FLOATS_PER_VERTEX;
     
     // cube constants
     constexpr size_t QUADS_PER_CUBE = 6;
     constexpr size_t VERTICES_PER_CUBE = QUADS_PER_CUBE * VERTICES_PER_QUAD;
-    constexpr size_t FLOATS_PER_CUBE = VERTEX_SIZE * VERTICES_PER_CUBE;
+    constexpr size_t FLOATS_PER_CUBE = FLOATS_PER_VERTEX * VERTICES_PER_CUBE;
 
-    /*
-    template <size_t N, size_t M>
-    std::array<float, N * M>& getFloatArray(std::array<Vertex<N>, M>& vertices) {
-        static_assert(std::is_standard_layout_v<Vertex<N>>, "Vertex must have standard layout!");
-        static_assert(sizeof(Vertex<N>) == sizeof(float) * N, "Vertex<N> has unexpected size!");
-        static_assert(offsetof(Vertex<N>, data) == 0, "data must be at beginning of Vertex!");
+    // forward declarations for upcoming functions
+    struct Vertex;
+    struct Quad;
+    struct Cube;
 
-        return reinterpret_cast<std::array<float, N * M>&>(vertices);
-    }
-
+    // converts an array of vertices into an array of floats
     template <size_t N>
-    std::array<float, N * VERTICES_PER_QUAD * VERTEX_SIZE>& getFloatArray(std::array<Quad, N>& quads) {
-        
-    }
-    */
+    std::array<float, FLOATS_PER_VERTEX * N>& getFloatArray(std::array<Vertex, N>& vertices);
+
+    // converts an array of quads into an array of floats
+    template <size_t N>
+    std::array<float, FLOATS_PER_QUAD * N>& getFloatArray(std::array<Quad, N>& quads);
+
+    // converts an array of cubes into an array of floats
+    template <size_t N>
+    std::array<float, FLOATS_PER_CUBE * N>& getFloatArray(std::array<Cube, N>& cubes);
 }
 
 #endif
