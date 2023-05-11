@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
+#include <cstdio>
 
 #include "../include/Cube.h"
 #include "../include/Quad.h"
@@ -37,8 +38,11 @@ int main() {
     if(!glfwInit())
         return -1;
 
+    const size_t resX = 1600;
+    const size_t resY = 900;
+
     // create new window with 800x600 resolution titled "OpenGL Window"
-    window = glfwCreateWindow(800, 600, "OpenGL Window", NULL, NULL);
+    window = glfwCreateWindow(resX, resY, "OpenGL Window", NULL, NULL);
 
     // ensure that window successfully initialized
     if(!window) {
@@ -61,27 +65,40 @@ int main() {
     // print the OpenGL version
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    float scale = 0.1f;
-    
-    Cube cubes[256];
+    const size_t radius = 32;
+
+    Cube cubes[radius * radius];
     TextureAtlas texture("resources/textures/atlas.bmp", 4, 4);
 
-    for(size_t i = 0; i < 256; i++) {
-        size_t pass = i / 16;
-        cubes[i].setPosition(i % 16, 1.0f, pass);
-        cubes[i].setNormalizedDeviceCoordinates(16.0f);
-        cubes[i].setAllTextureCoords(&texture, 2, 3, 1, 1);
+    int xs[] = {
+        1, 2, 2, 3, 3
+    };
+
+    int ys[] = {
+        3, 3, 2, 1, 0
+    };
+
+    for(size_t i = 0; i < radius * radius; i++) {
+        size_t pass = i / radius;
+        cubes[i].setPosition(i % radius, 1.0f, pass);
+        cubes[i].setNormalizedDeviceCoordinates((float)radius);
+        size_t randomNum = rand() % 5;
+        cubes[i].setAllTextureCoords(&texture, xs[randomNum], ys[randomNum], 1, 1);
     }
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
+
     VertexArray va;
-    VertexBuffer vb(std::get<0>(getFloatArray(cubes, 256)), std::get<1>(getFloatArray(cubes, 256)) * sizeof(float));
+    VertexBuffer vb(std::get<0>(getFloatArray(cubes, radius * radius)), std::get<1>(getFloatArray(cubes, radius * radius)) * sizeof(float));
 
     VertexBufferLayout layout;
     layout.push_float(3);
     layout.push_float(2);
     va.addBuffer(vb, layout);
 
-    IndexBuffer ib(std::get<0>(getIndicesArray(cubes, 256)), std::get<1>(getIndicesArray(cubes, 256)));
+    IndexBuffer ib(std::get<0>(getIndicesArray(radius * radius)), std::get<1>(getIndicesArray(radius * radius)));
 
     Shader shader("resources/shaders/basic.shader");
     shader.bind();
@@ -97,7 +114,7 @@ int main() {
 
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)resX / (float)resY, 0.01f, 100.0f);
     glm::mat4 mvp = projection * view * model;
 
     Camera cam;

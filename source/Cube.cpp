@@ -260,4 +260,6 @@ namespace Geometry {
         if(FLAGS && BOTTOM)
             setBottomTextureCoords(a, x, y, width, height);
     }
+
+
 }

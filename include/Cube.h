@@ -107,6 +107,18 @@ namespace Geometry {
 
         // sets the texture coords for the flagged sides (example: FLAGS = Cube::TOP | Cube::LEFT)
         void setFlagsTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint8_t FLAGS);
+        
+        // get a quad
+        inline Quad* getTopQuad() { return quads + 5; }
+        inline Quad* getBackQuad() { return quads + 2; }
+        inline Quad* getLeftQuad() { return quads + 3; }
+        inline Quad* getFrontQuad() { return quads + 0; }
+        inline Quad* getRightQuad() { return quads + 1; }
+        inline Quad* getBottomQuad() { return quads + 4; }
+
+        std::tuple<Quad**, size_t> getQuadRefs(uint8_t FLAGS);
+
+        std::tuple<Quad*, size_t> getQuadCopies(uint8_t FLAGS);
     };
 
     // converts an array of cubes into an array of floats 
@@ -114,7 +126,7 @@ namespace Geometry {
         return std::make_tuple((float*)cubes, numCubes * FLOATS_PER_CUBE);
     }
 
-    inline std::tuple<unsigned int*, size_t> getIndicesArray(Cube* cubes, size_t numCubes) {
+    inline std::tuple<unsigned int*, size_t> getIndicesArray(size_t numCubes) {
         unsigned int* indexBuff = (unsigned int*)malloc(numCubes * 36 * sizeof(unsigned int));
         for(size_t i = 0; i < numCubes; i++) {
             for(size_t j = 0; j < 36; j++) {

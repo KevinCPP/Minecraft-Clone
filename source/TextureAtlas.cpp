@@ -42,8 +42,5 @@ glm::vec2 TextureAtlas::getTextureCoords(unsigned int x, unsigned int y) const {
         coords.y = (1.0f / numRows) * y;
     }
 
-    using namespace std;
-    std::cout << "getTextureCoords: " << setw(6) << coords.x << setw(6) << coords.y << std::endl;
-
     return coords;
 }

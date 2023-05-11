@@ -29,23 +29,10 @@ namespace Geometry {
     void Quad::setTextureCoordsFromAtlas(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
         assert(VERTICES_PER_QUAD == 4 && "VERTICES_PER_QUAD != 4");
         
-        std::cout << "Quad Info: " << x << " " << y << " " << width << " " << height << " " << (a == NULL) << std::endl;
-
-        // doesn't work, (2, 4)
         vertices[0].setTextureCoords(a->getTextureCoords(x, y + height));
-        std::cout << std::setw(6) << vertices[0].getTextureCoords().x << std::setw(6) << vertices[0].getTextureCoords().y << std::endl;
-
-        // works, (2, 3)
         vertices[1].setTextureCoords(a->getTextureCoords(x, y));
-        std::cout << std::setw(6) << vertices[0].getTextureCoords().x << std::setw(6) << vertices[0].getTextureCoords().y << std::endl;
-
         vertices[2].setTextureCoords(a->getTextureCoords(x + width, y + height));
-        std::cout << std::setw(6) << vertices[0].getTextureCoords().x << std::setw(6) << vertices[0].getTextureCoords().y << std::endl;
-
         vertices[3].setTextureCoords(a->getTextureCoords(x + width, y));
-        std::cout << std::setw(6) << vertices[0].getTextureCoords().x << std::setw(6) << vertices[0].getTextureCoords().y << std::endl;
-
-        std::cout << std::endl;
     } 
 
     void Quad::addOffset(float X, float Y, float Z) {
@@ -63,7 +50,9 @@ namespace Geometry {
     }
 
     void Quad::addOffsetAndScale(const glm::vec4& offsetAndScale) {
-        std::cout << "not implemented\n"; 
+        for(auto& v : vertices) {
+            v.setPosition((v.getPosition() + glm::vec3(offsetAndScale)) * offsetAndScale.w);
+        }
     }
 
 }
