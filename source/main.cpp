@@ -12,6 +12,7 @@
 #include "../include/Vertex.h"
 #include "../include/Camera.h"
 #include "../include/Texture.h"
+#include "../include/Settings.h"
 #include "../include/Renderer.h"
 #include "../include/IndexBuffer.h"
 #include "../include/VertexArray.h"
@@ -30,6 +31,9 @@ int main() {
 #ifdef ENABLE_TESTS
     testQuads();
 #endif
+    
+    // set up game default settings
+    Settings::defaultSettings();
 
     // window object
     GLFWwindow *window;
@@ -38,11 +42,8 @@ int main() {
     if(!glfwInit())
         return -1;
 
-    const size_t resX = 1600;
-    const size_t resY = 900;
-
     // create new window with 800x600 resolution titled "OpenGL Window"
-    window = glfwCreateWindow(resX, resY, "OpenGL Window", NULL, NULL);
+    window = glfwCreateWindow(Settings::ResolutionX, Settings::ResolutionY, "OpenGL Window", NULL, NULL);
 
     // ensure that window successfully initialized
     if(!window) {
@@ -114,7 +115,7 @@ int main() {
 
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)resX / (float)resY, 0.01f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)Settings::ResolutionX / (float)Settings::ResolutionY, 0.01f, 100.0f);
     glm::mat4 mvp = projection * view * model;
 
     Camera cam;
