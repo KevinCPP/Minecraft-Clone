@@ -29,6 +29,12 @@ namespace Geometry {
         // creates a default cube with scale = 1
         Cube();
 
+        // copy constructor
+        Cube(const Cube& other);
+
+        // Assignment operator
+        Cube& operator=(const Cube& other);
+
         // creates a cube where the offsets are added to the position data in the vertices
         Cube(float offsetX, float offsetY, float offsetZ);
 

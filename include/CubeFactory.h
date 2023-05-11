@@ -17,6 +17,7 @@ namespace Blocks {
         }
 
         Geometry::Cube* getMaterialCube(const Material& mat);
+        Geometry::Cube makeMaterialCube(const Material& mat);
 
     private:
         TextureAtlas* atlas;

@@ -55,6 +55,18 @@ namespace Geometry {
         Reset();
     }
 
+    Cube::Cube(const Cube& other) {
+        memcpy(quads, other.quads, sizeof(Quad) * QUADS_PER_CUBE);
+    }   
+
+    Cube& Cube::operator=(const Cube& other) {
+        if(this != &other) {
+            memcpy(quads, other.quads, sizeof(Quad) * QUADS_PER_CUBE);
+        }
+
+        return *this;
+    }
+
     Cube::Cube(float X, float Y, float Z) {
         setPosition(X, Y, Z); 
     }
