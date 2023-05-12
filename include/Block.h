@@ -2,11 +2,10 @@
 #define BLOCK_H
 
 #include "Cube.h"
-#include "BlockData.h"
 
-namespace Blocks {
+namespace Blocks {  
 
-    enum Material {
+    enum Material : uint8_t {
         STONE = 0,
         COBBLESTONE,
         DIRT,
@@ -24,11 +23,19 @@ namespace Blocks {
         AIR
     };
 
-    struct Block {
-        Geometry::Cube cube;
-        BlockData data;
+    enum Direction : uint8_t {
+        NORTH = 0,
+        SOUTH,
+        EAST,
+        WEST
     };
 
+    constexpr size_t NUM_MATERIALS = AIR;
+
+    struct Block {
+        Material mat;
+        Direction dir;
+    };
 }
 
 #endif

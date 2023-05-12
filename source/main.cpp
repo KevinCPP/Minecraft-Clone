@@ -9,6 +9,7 @@
 
 #include "../include/Cube.h"
 #include "../include/Quad.h"
+#include "../include/Chunk.h"
 #include "../include/Vertex.h"
 #include "../include/Camera.h"
 #include "../include/Texture.h"
@@ -66,40 +67,24 @@ int main() {
     // print the OpenGL version
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    const size_t radius = 32;
+    Chunk chunk;
 
-    Cube cubes[radius * radius];
-    TextureAtlas texture("resources/textures/atlas.bmp", 4, 4);
+    auto chunkData = chunk.getFloatsAndIndices();
 
-    int xs[] = {
-        1, 2, 2, 3, 3
-    };
-
-    int ys[] = {
-        3, 3, 2, 1, 0
-    };
-
-    for(size_t i = 0; i < radius * radius; i++) {
-        size_t pass = i / radius;
-        cubes[i].setPosition(i % radius, 1.0f, pass);
-        cubes[i].setNormalizedDeviceCoordinates((float)radius);
-        size_t randomNum = rand() % 5;
-        cubes[i].setAllTextureCoords(&texture, xs[randomNum], ys[randomNum], 1, 1);
-    }
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
     VertexArray va;
-    VertexBuffer vb(std::get<0>(getFloatArray(cubes, radius * radius)), std::get<1>(getFloatArray(cubes, radius * radius)) * sizeof(float));
+    VertexBuffer vb(std::get<0>(chunkData).data(), std::get<0>(chunkData).size() * sizeof(float));
 
     VertexBufferLayout layout;
     layout.push_float(3);
     layout.push_float(2);
     va.addBuffer(vb, layout);
 
-    IndexBuffer ib(std::get<0>(getIndicesArray(radius * radius)), std::get<1>(getIndicesArray(radius * radius)));
+    IndexBuffer ib(std::get<1>(chunkData).data(), std::get<1>(chunkData).size());
 
     Shader shader("resources/shaders/basic.shader");
     shader.bind();

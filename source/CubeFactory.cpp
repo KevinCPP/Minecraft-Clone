@@ -30,9 +30,13 @@ namespace Blocks {
     }
 
     Geometry::Cube* CubeFactory::getMaterialCube(const Material& mat) {
-        if(mat >= enumSize) return nullptr;
+        if(mat >= NUM_MATERIALS) return nullptr;
 
         return &cubes[mat];
+    }
+
+    Geometry::Cube CubeFactory::makeMaterialCube(const Material& mat) {
+        return Geometry::Cube(cubes[mat]);
     }
 
 }

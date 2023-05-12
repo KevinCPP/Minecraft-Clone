@@ -24,12 +24,10 @@ namespace Blocks {
         
         CubeFactory();
         ~CubeFactory();
-        CubeFactory(const Material&) = delete;
-        CubeFactory& operator=(const Material&) = delete;
+        CubeFactory(const CubeFactory&) = delete;
+        CubeFactory& operator=(const CubeFactory&) = delete;
 
-        static constexpr size_t enumSize = AIR;
-
-        Geometry::Cube cubes[enumSize];
+        Geometry::Cube cubes[NUM_MATERIALS];
     };
 
 }
