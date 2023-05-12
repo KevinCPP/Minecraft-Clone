@@ -105,7 +105,7 @@ int main() {
 
     Camera cam;
     cam.setSensitivity(4.0f);
-    cam.setMovementSpeed(0.5f);
+    cam.setMovementSpeed(0.2f);
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;

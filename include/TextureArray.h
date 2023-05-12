@@ -3,6 +3,8 @@
 
 #include <GL/glew.h>
 
+#include "Macros.h"
+
 class TextureArray {
 public:
     TextureArray();
@@ -17,12 +19,12 @@ public:
     bool loadTextures(const std::string& directory, GLenum format = GL_RGBA);
 
     unsigned int getID() const { return m_TextureID; }
-    unsigned int getWidth() const { return m_width; }
-    unsigned int getHeight() const { return m_height; }
+    unsigned int getWidth() const { return m_Width; }
+    unsigned int getHeight() const { return m_Height; }
 
 private:
     unsigned int m_TextureID;
-    unsigned int m_Width, m_Height, m_BPP;
-}
+    int m_Width, m_Height, m_BPP;
+};
 
 #endif

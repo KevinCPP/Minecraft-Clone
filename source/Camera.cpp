@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include <iostream>
 
 const float Camera::DEFAULT_SENSITIVITY = 0.1f;
 const float Camera::DEFAULT_SPEED = 2.5f;
@@ -8,7 +9,7 @@ const float Camera::DEFAULT_YAW = -90.0f;
 
 Camera::Camera() {
     // initialize member variables to defaults
-    position = glm::vec3(0.0f, 0.0f, 3.0f);
+    position = glm::vec3(0.0f, 0.0f, 0.0f);
     worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
     sensitivity = DEFAULT_SENSITIVITY;
     movementSpeed = DEFAULT_SPEED;
@@ -88,6 +89,9 @@ void Camera::processKeyboardInput(Direction direction, float deltaTime) {
             position -= worldUp * velocity;
             break;
     }
+
+
+    std::cout << "POS: " << position.x << " " << position.y << " " << position.z << std::endl;
 }
 
 void Camera::processMouseMovement(float xOffset, float yOffset) {

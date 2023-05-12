@@ -9,6 +9,10 @@ namespace Settings {
     size_t       ResolutionY;
     float        FOV;
 
+    bool        useMipmapping;
+    bool        useAnisotropicFiltering;
+    float       anisotropicLevels;
+
     void defaultSettings() {
         TEXTURE_ATLAS_FILE_PATH = "resources/textures/atlas.bmp";
         TEXTURE_ATLAS_SIZE_X = 4;
@@ -17,5 +21,9 @@ namespace Settings {
         ResolutionX = 1600;
         ResolutionY = 900;
         FOV = 90.0f;
+    
+        useMipmapping = true;
+        useAnisotropicFiltering = true;
+        anisotropicLevels = 2.0f;
     }
 }

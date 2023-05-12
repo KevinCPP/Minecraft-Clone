@@ -33,7 +33,7 @@ bool TextureArray::loadTextures(const std::string& directory, GLenum format) {
     // bottom left, not top left.
     stbi_set_flip_vertically_on_load(1);
 
-    unsigned int width, height, bpp;
+    int width, height, bpp;
     unsigned char* data = stbi_load(files[0].c_str(), &m_Width, &m_Height, &m_BPP, 0);
 
     if(!data) {
@@ -44,7 +44,7 @@ bool TextureArray::loadTextures(const std::string& directory, GLenum format) {
     stbi_image_free(data);
 
     GLCall(glBindTexture(GL_TEXTURE_2D_ARRAY, m_TextureID));
-    GLcall(glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, format, m_Width, m_Height, files.size()));
+    GLCall(glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, format, m_Width, m_Height, files.size()));
 
     for(unsigned int i = 0; i < files.size(); i++) {
         data = stbi_load(files[i].c_str(), &width, &height, &bpp, 0);
