@@ -29,10 +29,12 @@ namespace Geometry {
     void Quad::setTextureCoordsFromAtlas(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
         assert(VERTICES_PER_QUAD == 4 && "VERTICES_PER_QUAD != 4");
         
-        vertices[0].setTextureCoords(a->getTextureCoords(x, y + height));
-        vertices[1].setTextureCoords(a->getTextureCoords(x, y));
-        vertices[2].setTextureCoords(a->getTextureCoords(x + width, y + height));
-        vertices[3].setTextureCoords(a->getTextureCoords(x + width, y));
+        float tol = 0.002f;
+
+        vertices[0].setTextureCoords(a->getTextureCoords(x, y + height) + glm::vec2(tol, -tol) );
+        vertices[1].setTextureCoords(a->getTextureCoords(x, y) + glm::vec2(tol, tol));
+        vertices[2].setTextureCoords(a->getTextureCoords(x + width, y + height) + glm::vec2(-tol, -tol));
+        vertices[3].setTextureCoords(a->getTextureCoords(x + width, y) + glm::vec2(-tol, tol));
     } 
 
     void Quad::addOffset(float X, float Y, float Z) {
