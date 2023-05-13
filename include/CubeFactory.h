@@ -1,6 +1,8 @@
 #ifndef CUBEFACTORY_H
 #define CUBEFACTORY_H
 
+#include <optional>
+
 #include "Cube.h"
 #include "Block.h"
 #include "TextureArray.h"
@@ -17,7 +19,7 @@ namespace Blocks {
         }
 
         Geometry::Cube* getMaterialCube(const Material& mat);
-        Geometry::Cube makeMaterialCube(const Material& mat);
+        std::optional<Geometry::Cube> makeMaterialCube(const Material& mat);
 
     private:
         TextureArray* texArray;

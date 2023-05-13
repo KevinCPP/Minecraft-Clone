@@ -1,6 +1,10 @@
 #ifndef BLOCKFACTORY_H
 #define BLOCKFACTORY_H
 
+#include <optional>
+
+#include "Block.h"
+
 namespace Blocks {
     
     class BlockFactory {
@@ -12,18 +16,18 @@ namespace Blocks {
         }
 
         Block* getBlock(const Material& mat);
-        Block makeBlock(const Material& mat);
+        std::optional<Block> makeBlock(const Material& mat);
         
 
     private:
         
-        CubeFactory();
-        ~CubeFactory();
-        CubeFactory(const Material&) = delete;
-        CubeFactory& operator=(const Material&) = delete;
+        BlockFactory();
+        ~BlockFactory();
+        BlockFactory(const Material&) = delete;
+        BlockFactory& operator=(const Material&) = delete;
         
-        Block[NUM_MATERIALS] blocks; 
-    }
+        Block blocks[NUM_MATERIALS];
+    };
 
 }
 

@@ -36,8 +36,12 @@ namespace Blocks {
         return &cubes[mat];
     }
 
-    Geometry::Cube CubeFactory::makeMaterialCube(const Material& mat) {
-        return Geometry::Cube(cubes[mat]);
+    std::optional<Geometry::Cube> CubeFactory::makeMaterialCube(const Material& mat) {
+        if(mat >= NUM_MATERIALS) return std::nullopt;
+        
+        std::optional<Geometry::Cube> tempCube = Geometry::Cube(cubes[mat]);
+
+        return tempCube;
     }
 
 }

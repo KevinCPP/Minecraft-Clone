@@ -35,6 +35,11 @@ namespace Blocks {
     struct Block {
         Material mat;
         Direction dir;
+        
+        Block(Material material = AIR, Direction direction = NORTH);
+        Block(const Block& other);
+
+        Block& operator=(const Block& other);
     };
 }
 
