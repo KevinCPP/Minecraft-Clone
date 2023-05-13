@@ -56,7 +56,7 @@ int main() {
     glfwMakeContextCurrent(window);
 
     // draw 1 frame before swapping front and back frame buffer
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
     // ensure that glew initialized successfully
     if(glewInit() != GLEW_OK) {
@@ -104,7 +104,7 @@ int main() {
     glm::mat4 mvp = projection * view * model;
 
     Camera cam;
-    cam.setSensitivity(4.0f);
+    cam.setSensitivity(60.0f);
     cam.setMovementSpeed(0.2f);
 
     float deltaTime = 0.0f;
@@ -115,7 +115,9 @@ int main() {
         
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
+        std::cout << 1.0f / deltaTime << '\n';
         lastFrame = currentFrame;
+        
 
         if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             cam.processKeyboardInput(Camera::Direction::FRONT, deltaTime);
@@ -131,13 +133,13 @@ int main() {
             cam.processKeyboardInput(Camera::Direction::DOWN, deltaTime);
         
         if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-            cam.processMouseMovement(0, 1);
+            cam.processMouseMovement(0, deltaTime);
         if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-            cam.processMouseMovement(1, 0);
+            cam.processMouseMovement(deltaTime, 0);
         if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-            cam.processMouseMovement(0, -1);
+            cam.processMouseMovement(0, -deltaTime);
         if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-            cam.processMouseMovement(-1, 0);
+            cam.processMouseMovement(-deltaTime, 0);
 
         // update MVP matrix
         mvp = projection * cam.getViewMatrix() * model;
