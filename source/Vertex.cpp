@@ -1,7 +1,7 @@
 #include "../include/Vertex.h"
 
 namespace Geometry {
-    
+
     // setters and getters...
     void Vertex::setPosition(float x, float y, float z) {
         assert(FLOATS_PER_VERTEX >= 3 && "Vertex::setPosition, N < 3");
@@ -13,9 +13,22 @@ namespace Geometry {
         data[3] = u; data[4] = v;
     }
 
+    void Vertex::setTextureArrayCoords(float u, float v, float z) {
+        assert(FLOATS_PER_VERTEX >= 6 && "Vertex::setTextureArrayCoords, N < 6");
+        data[3] = u; data[4] = v; data[5] = z;
+    }
+
+    void Vertex::setTextureArrayCoords(const glm::vec3& uvz) {
+        setTextureArrayCoords(uvz.x, uvz.y, uvz.z);
+    }
+
+    void Vertex::setTextureArrayIndex(float index) {
+        setTextureArrayCoords(data[3], data[4], index);
+    }
+
     void Vertex::setNormal(float x, float y, float z) {
-        assert(FLOATS_PER_VERTEX >= 8 && "Vertex::setNormal, N < 8");
-        data[5] = x; data[6] = y; data[7] = z;
+        assert(FLOATS_PER_VERTEX >= 9 && "Vertex::setNormal, N < 9");
+        data[6] = x; data[7] = y; data[8] = z;
     }
 
     void Vertex::setPosition(const glm::vec3& pos) {
@@ -30,6 +43,11 @@ namespace Geometry {
         setNormal(norm.x, norm.y, norm.z);
     }
 
+    float Vertex::getTextureArrayIndex() {
+        assert(FLOATS_PER_VERTEX >= 6 && "Vertex::getTextureArrayCoords, FLOATS_PER_VERTEX < 6");
+        return data[5];
+    }
+
     glm::vec3 Vertex::getPosition() const {
         assert(FLOATS_PER_VERTEX >= 3 && "Vertex::getPosition, FLOATS_PER_VERTEX < 3");
         return glm::vec3(data[0], data[1], data[2]);
@@ -40,8 +58,13 @@ namespace Geometry {
         return glm::vec2(data[3], data[4]);
     }
 
+    glm::vec3 Vertex::getTextureArrayCoords() const {
+        assert(FLOATS_PER_VERTEX >= 6 && "Vertex::getTextureArrayCoords, FLOATS_PER_VERTEX < 6");
+        return glm::vec3(data[3], data[4], data[5]);
+    }
+
     glm::vec3 Vertex::getNormal() const { 
-        assert(FLOATS_PER_VERTEX >= 8 && "vertex::getNormal, FLOATS_PER_VERTEX < 8"); 
-        return glm::vec3(data[5], data[6], data[7]);
+        assert(FLOATS_PER_VERTEX >= 9 && "vertex::getNormal, FLOATS_PER_VERTEX < 9"); 
+        return glm::vec3(data[6], data[7], data[8]);
     }
 }

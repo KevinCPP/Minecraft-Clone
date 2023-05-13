@@ -5,40 +5,40 @@ namespace Geometry {
     namespace {
         const Vertex DEFAULT_VERTICES[VERTICES_PER_CUBE] = {
             // front
-            Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 0),
-            Vertex( 1.0f,  1.0f, -1.0f, 1, 1),
-            Vertex( 1.0f, -1.0f, -1.0f, 1, 0),
+            Vertex(-1.0f,  1.0f, -1.0f, 0, 1, 0),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 0, 0),
+            Vertex( 1.0f,  1.0f, -1.0f, 1, 1, 0),
+            Vertex( 1.0f, -1.0f, -1.0f, 1, 0, 0),
 
             // right side
-            Vertex( 1.0f,  1.0f, -1.0f, 0, 1),
-            Vertex( 1.0f, -1.0f, -1.0f, 0, 0),
-            Vertex( 1.0f,  1.0f,  1.0f, 1, 1),
-            Vertex( 1.0f, -1.0f,  1.0f, 1, 0),
+            Vertex( 1.0f,  1.0f, -1.0f, 0, 1, 0),
+            Vertex( 1.0f, -1.0f, -1.0f, 0, 0, 0),
+            Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
+            Vertex( 1.0f, -1.0f,  1.0f, 1, 0, 0),
             
             // back
-            Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f,  1.0f, 0, 0),
-            Vertex( 1.0f,  1.0f,  1.0f, 1, 1),
-            Vertex( 1.0f, -1.0f,  1.0f, 1, 0),
+            Vertex(-1.0f,  1.0f,  1.0f, 0, 1, 0),
+            Vertex(-1.0f, -1.0f,  1.0f, 0, 0, 0),
+            Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
+            Vertex( 1.0f, -1.0f,  1.0f, 1, 0, 0),
             
             // left side
-            Vertex(-1.0f,  1.0f, -1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 0),
-            Vertex(-1.0f,  1.0f,  1.0f, 1, 1),
-            Vertex(-1.0f, -1.0f,  1.0f, 1, 0),
+            Vertex(-1.0f,  1.0f, -1.0f, 0, 1, 0),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 0, 0),
+            Vertex(-1.0f,  1.0f,  1.0f, 1, 1, 0),
+            Vertex(-1.0f, -1.0f,  1.0f, 1, 0, 0),
             
             // bottom
-            Vertex(-1.0f, -1.0f,  1.0f, 0, 1),
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 0),
-            Vertex( 1.0f, -1.0f,  1.0f, 1, 1),
-            Vertex( 1.0f, -1.0f, -1.0f, 1, 0),
+            Vertex(-1.0f, -1.0f,  1.0f, 0, 1, 0),
+            Vertex(-1.0f, -1.0f, -1.0f, 0, 0, 0),
+            Vertex( 1.0f, -1.0f,  1.0f, 1, 1, 0),
+            Vertex( 1.0f, -1.0f, -1.0f, 1, 0, 0),
             
             // top
-            Vertex(-1.0f,  1.0f,  1.0f, 0, 1),
-            Vertex(-1.0f,  1.0f, -1.0f, 0, 0),
-            Vertex( 1.0f,  1.0f,  1.0f, 1, 1),
-            Vertex( 1.0f,  1.0f, -1.0f, 1, 0),
+            Vertex(-1.0f,  1.0f,  1.0f, 0, 1, 0),
+            Vertex(-1.0f,  1.0f, -1.0f, 0, 0, 0),
+            Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
+            Vertex( 1.0f,  1.0f, -1.0f, 1, 0, 0),
         };
 
         const Quad DEFAULT_QUADS[QUADS_PER_CUBE] = {
@@ -273,5 +273,59 @@ namespace Geometry {
             setBottomTextureCoords(a, x, y, width, height);
     }
 
+    void Cube::setTopTextureArrayIndex(float index) {
+        quads[5].setTextureArrayIndex(index);
+    }
+    
+    void Cube::setBackTextureArrayIndex(float index) {
+        quads[2].setTextureArrayIndex(index);
+    }
+   
+    void Cube::setLeftTextureArrayIndex(float index) {
+        quads[3].setTextureArrayIndex(index);
+    }
 
+    void Cube::setRightTextureArrayIndex(float index) {
+        quads[1].setTextureArrayIndex(index);
+    }
+
+    void Cube::setFrontTextureArrayIndex(float index) {
+        quads[0].setTextureArrayIndex(index);
+    }
+
+    void Cube::setBottomTextureArrayIndex(float index) {
+        quads[4].setTextureArrayIndex(index);
+    }
+
+    void Cube::setAllTextureArrayIndex(float index) {
+        setSidesTextureArrayIndex(index);
+        setTopBottomTextureArrayIndex(index);
+    }
+
+    void Cube::setSidesTextureArrayIndex(float index) {
+        setLeftTextureArrayIndex(index);
+        setBackTextureArrayIndex(index);
+        setRightTextureArrayIndex(index);
+        setFrontTextureArrayIndex(index);
+    }
+
+    void Cube::setTopBottomTextureArrayIndex(float index) {
+        setTopTextureArrayIndex(index);
+        setBottomTextureArrayIndex(index);
+    }
+
+    void Cube::setFlagsTextureArrayIndex(float index, uint8_t FLAGS) {
+        if(FLAGS && TOP)
+            setTopTextureArrayIndex(index);
+        if(FLAGS && BACK)
+            setBackTextureArrayIndex(index);
+        if(FLAGS && LEFT)
+            setLeftTextureArrayIndex(index);
+        if(FLAGS && RIGHT)
+            setRightTextureArrayIndex(index);
+        if(FLAGS && FRONT)
+            setFrontTextureArrayIndex(index);
+        if(FLAGS && BOTTOM)
+            setBottomTextureArrayIndex(index);
+    } 
 }

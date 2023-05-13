@@ -16,11 +16,12 @@
 
 // third party library headers
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Geometry {
     
     // vertex constants
-    constexpr size_t FLOATS_PER_VERTEX = 5;
+    constexpr size_t FLOATS_PER_VERTEX = 6;
 
     // quad constants
     constexpr size_t VERTICES_PER_QUAD = 4;

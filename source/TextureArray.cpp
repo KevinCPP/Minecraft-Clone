@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../include/TextureArray.h"
+#include "../include/Settings.h"
 
 #include "../include/stb_image.h"
 
@@ -22,6 +23,25 @@ void TextureArray::bind(uint8_t slot) {
 
 void TextureArray::unbind() {
     GLCall(glBindTexture(GL_TEXTURE_2D_ARRAY, 0));
+}
+
+int TextureArray::getIndex(const std::string& fileName) const {
+    auto it = indices.find(fileName);
+    if(it != indices.end())
+        return it->second;
+
+    it = indices.find(Settings::TEXTURE_DIRECTORY + fileName);
+    if(it != indices.end())
+        return it->second;
+
+    std::cout << "FAILED TO GET: " << fileName << std::endl;
+    std::cout << "List of available textures: " << std::endl;
+
+    for(const auto& pair : indices) {
+        std::cout << pair.first << " index: " << pair.second << '\n';
+    }
+
+    return -1;
 }
 
 bool TextureArray::loadTextures(const std::string& directory, GLenum format) {
@@ -48,12 +68,14 @@ bool TextureArray::loadTextures(const std::string& directory, GLenum format) {
 
     for(unsigned int i = 0; i < files.size(); i++) {
         data = stbi_load(files[i].c_str(), &width, &height, &bpp, 0);
+        
+        indices[files[i]] = i;
         if(!data) {
             std::cerr << "Failed to load texture file " << files[i] << std::endl;
             return false;
         }
 
-        GLCall(glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, m_Width, m_Height, 1, format, GL_UNSIGNED_BYTE, data));
+        GLCall(glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, m_Width, m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, data));
         stbi_image_free(data);
     }
 
@@ -64,7 +86,7 @@ bool TextureArray::loadTextures(const std::string& directory, GLenum format) {
     GLCall(glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     GLCall(glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-    GLCall(glGenerateMipmap(GL_TEXTURE_2D));
+    GLCall(glGenerateMipmap(GL_TEXTURE_2D_ARRAY));
 
     return true;
 }

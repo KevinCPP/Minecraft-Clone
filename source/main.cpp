@@ -81,12 +81,12 @@ int main() {
 
     VertexBufferLayout layout;
     layout.push_float(3);
-    layout.push_float(2);
+    layout.push_float(3);
     va.addBuffer(vb, layout);
 
     IndexBuffer ib(std::get<1>(chunkData).data(), std::get<1>(chunkData).size());
 
-    Shader shader("resources/shaders/basic.shader");
+    Shader shader("resources/shaders/basic_array.shader");
     shader.bind();
 
     Renderer renderer;

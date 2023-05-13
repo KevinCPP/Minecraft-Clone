@@ -27,7 +27,21 @@ namespace Geometry {
         // two slots in the texture atlas. Useful for any blocks (paintings?) that are multiple blocks wide/tall.
         void setTextureCoordsFromAtlas(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
+        // sets the Z value for texture coordinates
+        void setTextureArrayIndex(float index);
+
+        // rotates the quad around the X, Y, or Z axis respectively.
+        void rotateZ();
+        void rotateY();
+        void rotateX();
+
+        // applies a general transformation matrix to the quad
+        void transform(const glm::mat4& transformationMatrix);
+        
+        // add an offset to the quad
         void addOffset(float X, float Y, float Z);
+
+        // add an offset to the quad, then scale it
         void addOffsetAndScale(float X, float Y, float Z, float scale);
 
         void addOffset(const glm::vec3& offset);

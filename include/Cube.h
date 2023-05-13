@@ -113,7 +113,19 @@ namespace Geometry {
 
         // sets the texture coords for the flagged sides (example: FLAGS = Cube::TOP | Cube::LEFT)
         void setFlagsTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint8_t FLAGS);
-        
+
+        void setTopTextureArrayIndex(float index);
+        void setBackTextureArrayIndex(float index);
+        void setLeftTextureArrayIndex(float index);
+        void setRightTextureArrayIndex(float index);
+        void setFrontTextureArrayIndex(float index);
+        void setBottomTextureArrayIndex(float index);
+
+        void setAllTextureArrayIndex(float index);
+        void setSidesTextureArrayIndex(float index);
+        void setTopBottomTextureArrayIndex(float index);
+        void setFlagsTextureArrayIndex(float index, uint8_t FLAGS);
+
         // get a quad
         inline Quad* getTopQuad() { return quads + 5; }
         inline Quad* getBackQuad() { return quads + 2; }
@@ -121,7 +133,9 @@ namespace Geometry {
         inline Quad* getFrontQuad() { return quads + 0; }
         inline Quad* getRightQuad() { return quads + 1; }
         inline Quad* getBottomQuad() { return quads + 4; }
-
+        
+        Quad* getFlagQuads();
+    
         std::tuple<Quad**, size_t> getQuadRefs(uint8_t FLAGS);
 
         std::tuple<Quad*, size_t> getQuadCopies(uint8_t FLAGS);

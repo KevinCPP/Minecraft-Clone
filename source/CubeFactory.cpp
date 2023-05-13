@@ -2,31 +2,32 @@
 #include "../include/Settings.h"
 
 namespace Blocks {
-
+     
     CubeFactory::CubeFactory() {
         using namespace Settings;
-        atlas = new TextureAtlas(TEXTURE_ATLAS_FILE_PATH, TEXTURE_ATLAS_SIZE_X, TEXTURE_ATLAS_SIZE_Y);
+        texArray = new TextureArray();
+        texArray->loadTextures(Settings::TEXTURE_DIRECTORY); 
 
-        cubes[STONE]        .setAllTextureCoords        (atlas, 1, 3, 1, 1);
-        cubes[COBBLESTONE]  .setAllTextureCoords        (atlas, 2, 3, 1, 1);
-        cubes[DIRT]         .setAllTextureCoords        (atlas, 2, 2, 1, 1);
-        cubes[GRASS_BLOCK]  .setTopTextureCoords        (atlas, 0, 2, 1, 1);
-        cubes[GRASS_BLOCK]  .setSidesTextureCoords      (atlas, 1, 2, 1, 1);
-        cubes[GRASS_BLOCK]  .setBottomTextureCoords     (atlas, 2, 2, 1, 1);
-        cubes[SAND]         .setAllTextureCoords        (atlas, 3, 2, 1, 1);
-        cubes[GRAVEL]       .setAllTextureCoords        (atlas, 3, 3, 1, 1);
-        cubes[LOG]          .setSidesTextureCoords      (atlas, 0, 1, 1, 1);
-        cubes[LOG]          .setTopBottomTextureCoords  (atlas, 1, 1, 1, 1);
-        cubes[LEAVES]       .setAllTextureCoords        (atlas, 2, 1, 1, 1);
-        cubes[PLANKS]       .setAllTextureCoords        (atlas, 3, 1, 1, 1);
-        cubes[BRICKS]       .setAllTextureCoords        (atlas, 0, 0, 1, 1);
-        cubes[OBSIDIAN]     .setAllTextureCoords        (atlas, 1, 0, 1, 1);
-        cubes[WATER]        .setAllTextureCoords        (atlas, 2, 0, 1, 1);
-        cubes[GLASS]        .setAllTextureCoords        (atlas, 3, 0, 1, 1);
+        cubes[STONE]        .setAllTextureArrayIndex(       (float)texArray->getIndex("stone.bmp"               ));
+        cubes[COBBLESTONE]  .setAllTextureArrayIndex(       (float)texArray->getIndex("cobblestone.bmp"         ));
+        cubes[DIRT]         .setAllTextureArrayIndex(       (float)texArray->getIndex("dirt.bmp"                ));
+        cubes[GRASS_BLOCK]  .setTopTextureArrayIndex(       (float)texArray->getIndex("grass_block_top.bmp"     ));
+        cubes[GRASS_BLOCK]  .setSidesTextureArrayIndex(     (float)texArray->getIndex("grass_block_sides.bmp"   ));
+        cubes[GRASS_BLOCK]  .setBottomTextureArrayIndex(    (float)texArray->getIndex("dirt.bmp"                ));
+        cubes[SAND]         .setAllTextureArrayIndex(       (float)texArray->getIndex("sand.bmp"                ));
+        cubes[GRAVEL]       .setAllTextureArrayIndex(       (float)texArray->getIndex("gravel.bmp"              ));
+        cubes[LOG]          .setSidesTextureArrayIndex(     (float)texArray->getIndex("log_sides.bmp"           ));
+        cubes[LOG]          .setTopBottomTextureArrayIndex( (float)texArray->getIndex("log_top_bottom.bmp"      ));
+        cubes[LEAVES]       .setAllTextureArrayIndex(       (float)texArray->getIndex("leaves.bmp"              ));
+        cubes[PLANKS]       .setAllTextureArrayIndex(       (float)texArray->getIndex("planks.bmp"              ));
+        cubes[BRICKS]       .setAllTextureArrayIndex(       (float)texArray->getIndex("bricks.bmp"              ));
+        cubes[OBSIDIAN]     .setAllTextureArrayIndex(       (float)texArray->getIndex("obsidian.bmp"            ));
+        cubes[WATER]        .setAllTextureArrayIndex(       (float)texArray->getIndex("water.bmp"               ));
+        cubes[GLASS]        .setAllTextureArrayIndex(       (float)texArray->getIndex("glass.bmp"               ));
     }
 
     CubeFactory::~CubeFactory() {
-        delete atlas; // since this is a singleton, could just leave this out
+        delete texArray; // since this is a singleton, could just leave this out
     }
 
     Geometry::Cube* CubeFactory::getMaterialCube(const Material& mat) {

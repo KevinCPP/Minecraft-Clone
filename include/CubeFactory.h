@@ -3,7 +3,7 @@
 
 #include "Cube.h"
 #include "Block.h"
-#include "TextureAtlas.h"
+#include "TextureArray.h"
 
 namespace Blocks {
 
@@ -20,8 +20,8 @@ namespace Blocks {
         Geometry::Cube makeMaterialCube(const Material& mat);
 
     private:
-        TextureAtlas* atlas;
-        
+        TextureArray* texArray;
+
         CubeFactory();
         ~CubeFactory();
         CubeFactory(const CubeFactory&) = delete;

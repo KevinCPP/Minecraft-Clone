@@ -29,16 +29,23 @@ namespace Geometry {
         // setters (floats)
         void setPosition(float x, float y, float z);
         void setTextureCoords(float u, float v);
+        void setTextureArrayCoords(float u, float v, float index);
         void setNormal(float x, float y, float z);
+        void setTextureArrayIndex(float index);
 
         // setters (glm vectors)
         void setPosition(const glm::vec3& pos);
         void setTextureCoords(const glm::vec2& uv);
+        void setTextureArrayCoords(const glm::vec3& uvz);
         void setNormal(const glm::vec3& norm);
+
+        // getters (floats)
+        float getTextureArrayIndex();
 
         // getters (glm vectors)
         glm::vec3 getPosition() const;
         glm::vec2 getTextureCoords() const;
+        glm::vec3 getTextureArrayCoords() const;
         glm::vec3 getNormal() const;
     }; 
 

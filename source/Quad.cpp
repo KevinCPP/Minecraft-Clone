@@ -37,6 +37,32 @@ namespace Geometry {
         vertices[3].setTextureCoords(a->getTextureCoords(x + width, y) + glm::vec2(-tol, tol));
     } 
 
+    void Quad::setTextureArrayIndex(float index) {
+        assert(index >= 0.0f && "Z value for Texture Array cannot be zero!");
+        for(auto& v : vertices)
+            v.setTextureArrayIndex(index);
+    }
+
+    void Quad::rotateX() {
+        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        transform(rotation);
+    }
+
+    void Quad::rotateY() {
+        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        transform(rotation);
+    }
+
+    void Quad::rotateZ() {
+        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        transform(rotation);
+    }
+
+    void Quad::transform(const glm::mat4& transformationMatrix) {
+        for(auto& v : vertices)
+            v.setPosition(glm::vec4(v.getPosition(), 1.0f) * transformationMatrix);
+    }
+
     void Quad::addOffset(float X, float Y, float Z) {
         addOffset(glm::vec3(X, Y, Z)); 
     }
