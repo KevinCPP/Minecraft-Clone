@@ -133,8 +133,6 @@ namespace Geometry {
         inline Quad* getFrontQuad() { return quads + 0; }
         inline Quad* getRightQuad() { return quads + 1; }
         inline Quad* getBottomQuad() { return quads + 4; }
-        
-        Quad* getFlagQuads();
     
         std::tuple<Quad**, size_t> getQuadRefs(uint8_t FLAGS);
 
