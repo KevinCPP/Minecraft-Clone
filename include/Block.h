@@ -32,13 +32,15 @@ namespace Blocks {
         WEST
     };
 
-    constexpr uint8_t TRANSPARENT_MATERIALS_ARRAY = {
+    constexpr uint8_t TRANSPARENT_MATERIALS_ARRAY[] = {
         AIR,
         GLASS,
         WATER
     };
 
     constexpr size_t NUM_MATERIALS = AIR;
+
+    bool isTransparent(const Material& mat);
 
     struct Block {
         Material mat;

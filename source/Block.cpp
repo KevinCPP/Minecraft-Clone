@@ -4,7 +4,15 @@
 namespace Blocks {
     
     using namespace Geometry;
-    
+
+    bool isTransparent(const Material& mat) {
+        for(auto& m : TRANSPARENT_MATERIALS_ARRAY)
+            if(mat == m)
+                return true;
+
+        return false;
+    }
+
     Block::Block(Material material, Direction direction) {
         mat = material;
         dir = direction;

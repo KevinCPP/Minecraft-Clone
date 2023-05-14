@@ -133,7 +133,14 @@ namespace Geometry {
         inline Quad* getFrontQuad() { return quads + 0; }
         inline Quad* getRightQuad() { return quads + 1; }
         inline Quad* getBottomQuad() { return quads + 4; }
-    
+
+        inline Quad copyTopQuad() { return quads[5]; }
+        inline Quad copyBackQuad() { return quads[2]; }
+        inline Quad copyLeftQuad() { return quads[3]; }
+        inline Quad copyFrontQuad() { return quads[0]; }
+        inline Quad copyRightQuad() { return quads[1]; }
+        inline Quad copyBottomQuad() { return quads[4]; }
+
         std::tuple<Quad**, size_t> getQuadRefs(uint8_t FLAGS);
 
         std::tuple<Quad*, size_t> getQuadCopies(uint8_t FLAGS);

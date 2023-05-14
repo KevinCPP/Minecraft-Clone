@@ -22,7 +22,7 @@ namespace Blocks {
     private:
         
         BlockFactory();
-        ~BlockFactory();
+        ~BlockFactory() = default;
         BlockFactory(const Material&) = delete;
         BlockFactory& operator=(const Material&) = delete;
         

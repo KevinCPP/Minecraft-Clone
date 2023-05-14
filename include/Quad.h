@@ -35,6 +35,14 @@ namespace Geometry {
         void rotateY();
         void rotateX();
 
+        // returns the normal vector of the quad
+        glm::vec3 getNormal() const;
+
+        // returns the center point of the quad
+        glm::vec3 getCenter() const;
+
+        bool isFacingCamera(const glm::vec3& cameraPos) const;
+
         // applies a general transformation matrix to the quad
         void transform(const glm::mat4& transformationMatrix);
         

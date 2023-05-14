@@ -37,6 +37,29 @@ namespace Geometry {
         vertices[3].setTextureCoords(a->getTextureCoords(x + width, y) + glm::vec2(-tol, tol));
     } 
 
+    bool isFacingCamera(const glm::vec3& cameraPos) const {
+        glm::vec3 toCamera = glm::normalize(cameraPos - getCenter());
+        return glm::dot(getNormal(), toCamera) < 0;
+    }
+
+    glm::vec3 Quad::getCenter() const {
+        glm::vec3 center(0.0f);
+        for (const auto& vertex : vertices) {
+            center += vertex.getPosition();
+        }
+        return center / static_cast<float>(VERTICES_PER_QUAD);
+    }
+
+
+    glm::vec3 Quad::getNormal() const {
+        glm::vec3 edge1 = vertices[1].getPosition() - vertices[0].getPosition();
+        glm::vec3 edge2 = vertices[2].getPosition() - vertices[0].getPosition();
+
+        glm::vec3 normal = glm::cross(edge1, edge2);
+
+        return glm::normalize(normal);
+    }
+
     void Quad::setTextureArrayIndex(float index) {
         assert(index >= 0.0f && "Z value for Texture Array cannot be zero!");
         for(auto& v : vertices)
