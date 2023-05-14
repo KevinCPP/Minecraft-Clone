@@ -1,6 +1,8 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include <optional>
+
 #include "Cube.h"
 
 namespace Blocks {  
@@ -38,6 +40,8 @@ namespace Blocks {
         
         Block(Material material = AIR, Direction direction = NORTH);
         Block(const Block& other);
+
+        std::optional<Geometry::Cube> getCube(float x, float y, float z);
 
         Block& operator=(const Block& other);
     };

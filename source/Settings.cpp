@@ -16,6 +16,8 @@ namespace Settings {
     bool        useAnisotropicFiltering;
     float       anisotropicLevels;
 
+    size_t      renderDistance;
+
     void defaultSettings() {
         TEXTURE_ATLAS_FILE_PATH = "resources/textures/atlas.bmp";
         TEXTURE_ATLAS_SIZE_X = 4;
@@ -31,5 +33,7 @@ namespace Settings {
         useMipmapping = true;
         useAnisotropicFiltering = true;
         anisotropicLevels = 2.0f;
+
+        renderDistance = 16;
     }
 }

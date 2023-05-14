@@ -23,6 +23,8 @@ namespace Settings {
     extern bool         useAnisotropicFiltering;
     extern float        anisotropicLevels;
 
+    extern size_t       renderDistance;
+
     // initializes default settings
     void defaultSettings();
 }

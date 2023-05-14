@@ -5,16 +5,16 @@ namespace Geometry {
     namespace {
         const Vertex DEFAULT_VERTICES[VERTICES_PER_CUBE] = {
             // front
-            Vertex(-1.0f,  1.0f, -1.0f, 0, 1, 0),
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 0, 0),
-            Vertex( 1.0f,  1.0f, -1.0f, 1, 1, 0),
-            Vertex( 1.0f, -1.0f, -1.0f, 1, 0, 0),
-
-            // right side
+            Vertex(-1.0f,  1.0f, -1.0f, 1, 1, 0),
+            Vertex(-1.0f, -1.0f, -1.0f, 1, 0, 0),
             Vertex( 1.0f,  1.0f, -1.0f, 0, 1, 0),
             Vertex( 1.0f, -1.0f, -1.0f, 0, 0, 0),
-            Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
-            Vertex( 1.0f, -1.0f,  1.0f, 1, 0, 0),
+
+            // right side
+            Vertex( 1.0f,  1.0f, -1.0f, 1, 1, 0), // bottom right
+            Vertex( 1.0f, -1.0f, -1.0f, 1, 0, 0), // bottom left
+            Vertex( 1.0f,  1.0f,  1.0f, 0, 1, 0), // top right
+            Vertex( 1.0f, -1.0f,  1.0f, 0, 0, 0), // top left
             
             // back
             Vertex(-1.0f,  1.0f,  1.0f, 0, 1, 0),

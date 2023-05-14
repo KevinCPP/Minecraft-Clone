@@ -26,6 +26,8 @@
 #include "../test/test.h"
 
 using namespace Geometry;
+using namespace Blocks;
+using namespace World;
 
 int main() {
 
@@ -68,6 +70,7 @@ int main() {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     Chunk chunk;
+    chunk.makeStone();
 
     auto chunkData = chunk.getFloatsAndIndices();
 
@@ -100,7 +103,7 @@ int main() {
 
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)Settings::ResolutionX / (float)Settings::ResolutionY, 0.01f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)Settings::ResolutionX / (float)Settings::ResolutionY, 0.0001f, 100.0f);
     glm::mat4 mvp = projection * view * model;
 
     Camera cam;
@@ -115,7 +118,7 @@ int main() {
         
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
-        std::cout << 1.0f / deltaTime << '\n';
+//        std::cout << 1.0f / deltaTime << '\n';
         lastFrame = currentFrame;
         
 
