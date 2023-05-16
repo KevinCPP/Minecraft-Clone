@@ -1,9 +1,8 @@
 #include "../include/Block.h"
+#include "../include/Utility.h"
 #include "../include/CubeFactory.h"
 
 namespace Blocks {
-    
-    using namespace Geometry;
 
     bool isTransparent(const Material& mat) {
         for(auto& m : TRANSPARENT_MATERIALS_ARRAY)
@@ -13,7 +12,11 @@ namespace Blocks {
         return false;
     }
 
-    Block::Block(Material material, Direction direction) {
+    Block::Block(Material material, Geometry::Direction direction) {
+        if(Utility::warn(material > NUM_MATERIALS, "attempted to make a block with an unknown material. defaulting to AIR.")) {
+            material = AIR;
+        }
+
         mat = material;
         dir = direction;
     }
@@ -29,7 +32,7 @@ namespace Blocks {
         return *this;
     }
 
-    std::optional<Cube> Block::getCube(float x, float y, float z) {
+    std::optional<Cube> Block::getCube(float x, float y, float z) { 
         std::optional<Cube> c = CubeFactory::getInstance().makeMaterialCube(mat);
         
         if(c.has_value())

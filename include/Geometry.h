@@ -19,7 +19,16 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Geometry {
-    
+
+    enum Direction : uint8_t {
+        TOP = 0,
+        LEFT,
+        BACK,
+        RIGHT,
+        FRONT,
+        BOTTOM
+    };
+
     // vertex constants
     constexpr size_t FLOATS_PER_VERTEX = 6;
 

@@ -5,7 +5,6 @@
 #include "World.h"
 #include "Block.h"
 #include "CubeFactory.h"
-#include "BlockFactory.h"
 #include "AxisAlignedBoundingBox.h"
 
 #include <vector>

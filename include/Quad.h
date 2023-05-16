@@ -15,8 +15,6 @@ namespace Geometry {
         // indices for rendering a quad
         static constexpr std::array<unsigned int, 6> indices = { 0, 1, 2, 0, 2, 3 };
 
-        
-
         // constructors
         Quad() = default;
         Quad(std::initializer_list<Vertex> list);
@@ -62,6 +60,10 @@ namespace Geometry {
         void addOffset(const glm::vec3& offset);
         void addOffsetAndScale(const glm::vec4& offsetAndScale);
     };
+
+    struct QuadInstanceData {
+        
+    }
 
     // returns a tuple with an array of floats, and the size of the array
     inline std::tuple<float*, size_t> getFloatArray(Quad* quads, size_t numQuads) {
