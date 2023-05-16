@@ -6,39 +6,39 @@ namespace Geometry {
         const Vertex DEFAULT_VERTICES[VERTICES_PER_CUBE] = {
             // front
             Vertex(-1.0f,  1.0f, -1.0f, 1, 1, 0),
-            Vertex(-1.0f, -1.0f, -1.0f, 1, 0, 0),
             Vertex( 1.0f,  1.0f, -1.0f, 0, 1, 0),
             Vertex( 1.0f, -1.0f, -1.0f, 0, 0, 0),
+            Vertex(-1.0f, -1.0f, -1.0f, 1, 0, 0),
 
             // right side
-            Vertex( 1.0f,  1.0f, -1.0f, 1, 1, 0), // bottom right
             Vertex( 1.0f, -1.0f, -1.0f, 1, 0, 0), // bottom left
+            Vertex( 1.0f,  1.0f, -1.0f, 1, 1, 0), // bottom right
             Vertex( 1.0f,  1.0f,  1.0f, 0, 1, 0), // top right
             Vertex( 1.0f, -1.0f,  1.0f, 0, 0, 0), // top left
             
             // back
-            Vertex(-1.0f,  1.0f,  1.0f, 0, 1, 0),
             Vertex(-1.0f, -1.0f,  1.0f, 0, 0, 0),
-            Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
             Vertex( 1.0f, -1.0f,  1.0f, 1, 0, 0),
+            Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
+            Vertex(-1.0f,  1.0f,  1.0f, 0, 1, 0),
             
             // left side
+            Vertex(-1.0f, -1.0f,  1.0f, 1, 0, 0),
+            Vertex(-1.0f,  1.0f,  1.0f, 1, 1, 0),
             Vertex(-1.0f,  1.0f, -1.0f, 0, 1, 0),
             Vertex(-1.0f, -1.0f, -1.0f, 0, 0, 0),
-            Vertex(-1.0f,  1.0f,  1.0f, 1, 1, 0),
-            Vertex(-1.0f, -1.0f,  1.0f, 1, 0, 0),
             
             // bottom
-            Vertex(-1.0f, -1.0f,  1.0f, 0, 1, 0),
             Vertex(-1.0f, -1.0f, -1.0f, 0, 0, 0),
-            Vertex( 1.0f, -1.0f,  1.0f, 1, 1, 0),
             Vertex( 1.0f, -1.0f, -1.0f, 1, 0, 0),
+            Vertex( 1.0f, -1.0f,  1.0f, 1, 1, 0),
+            Vertex(-1.0f, -1.0f,  1.0f, 0, 1, 0),
             
             // top
             Vertex(-1.0f,  1.0f,  1.0f, 0, 1, 0),
-            Vertex(-1.0f,  1.0f, -1.0f, 0, 0, 0),
             Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
             Vertex( 1.0f,  1.0f, -1.0f, 1, 0, 0),
+            Vertex(-1.0f,  1.0f, -1.0f, 0, 0, 0),
         };
 
         const Quad DEFAULT_QUADS[QUADS_PER_CUBE] = {
@@ -87,6 +87,23 @@ namespace Geometry {
         assert(QUADS_PER_CUBE == 6 && "QUADS_PER_CUBE != 6");
         memcpy(quads, quadArr.data(), QUADS_PER_CUBE * sizeof(Quad));
     }
+
+    bool Cube::operator==(const Cube& other) const {
+        for(size_t i = 0; i < QUADS_PER_CUBE; i++) {
+            if(quads[i] != other.quads[i]) return false;
+        }
+        return true;
+    }
+    
+
+    bool Cube::operator!=(const Cube& other) const {
+        for(size_t i = 0; i < QUADS_PER_CUBE; i++) {
+            if(quads[i] == other.quads[i]) return false;
+        }
+        return true;
+    }
+    
+
 
     // resets the entire cube to default
     void Cube::Reset() {

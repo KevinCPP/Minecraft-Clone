@@ -71,23 +71,33 @@ int main() {
 
     Chunk chunk;
     chunk.makeStone();
+    chunk.findVisible();
 
-    auto chunkData = chunk.getFloatsAndIndices();
+    std::vector<unsigned int> indices(chunk.visibleQuads.size() * 6);
+    for(size_t i = 0; i < chunk.visibleQuads.size(); i++) {
+        for(size_t j = 0; j < 6; j++) {
+            indices.push_back((i * 4) + Quad::indices[j]);
+        }
+    }
 
+//    GLCall(glEnable(GL_CULL_FACE));
+//    GLCall(glCullFace(GL_BACK));
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
+    std::cout << chunk.visibleQuads.size() << std::endl;
+
     VertexArray va;
-    VertexBuffer vb(std::get<0>(chunkData).data(), std::get<0>(chunkData).size() * sizeof(float));
+    VertexBuffer vb((float*)chunk.visibleQuads.data(), chunk.visibleQuads.size() * 6 * sizeof(float));
 
     VertexBufferLayout layout;
     layout.push_float(3);
     layout.push_float(3);
     va.addBuffer(vb, layout);
 
-    IndexBuffer ib(std::get<1>(chunkData).data(), std::get<1>(chunkData).size());
+    IndexBuffer ib(indices.data(), indices.size()); 
 
     Shader shader("resources/shaders/basic_array.shader");
     shader.bind();

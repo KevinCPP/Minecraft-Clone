@@ -18,12 +18,12 @@ namespace Geometry {
         static const uint8_t BOTTOM     = 0b00010000;
 
         static constexpr std::array<unsigned int, 36> indices = {
-             0,  1,  2,  2,  1,  3, // renders front face
-             4,  5,  6,  6,  5,  7, // renders right face 
-             8,  9, 10, 10,  9, 11, // renders back face
-            12, 13, 14, 14, 13, 15, // renders left face
-            16, 17, 18, 18, 17, 19, // renders bottom face
-            20, 21, 22, 22, 21, 23  // renders top face
+            0,  1,  2,  0,  2,  3,  // front
+            4,  5,  6,  4,  6,  7,  // right side
+            8,  9,  10, 8,  10, 11, // back
+            12, 13, 14, 12, 14, 15, // left side
+            16, 17, 18, 16, 18, 19, // bottom
+            20, 21, 22, 20, 22, 23  // top
         };
 
         // creates a default cube with scale = 1
@@ -49,6 +49,9 @@ namespace Geometry {
 
         // accepts an array of quads so a cube can be made manually by the user
         Cube(std::array<Quad, 6> quadArr);
+
+        bool operator==(const Cube& other) const;
+        bool operator!=(const Cube& other) const;
 
         // resets the cube to default cube
         void Reset();
@@ -127,18 +130,18 @@ namespace Geometry {
         void setFlagsTextureArrayIndex(float index, uint8_t FLAGS);
 
         // get a quad
-        inline Quad* getTopQuad() { return quads + 5; }
-        inline Quad* getBackQuad() { return quads + 2; }
-        inline Quad* getLeftQuad() { return quads + 3; }
-        inline Quad* getFrontQuad() { return quads + 0; }
-        inline Quad* getRightQuad() { return quads + 1; }
+        inline Quad* getTopQuad()    { return quads + 5; }
+        inline Quad* getBackQuad()   { return quads + 2; }
+        inline Quad* getLeftQuad()   { return quads + 3; }
+        inline Quad* getFrontQuad()  { return quads + 0; }
+        inline Quad* getRightQuad()  { return quads + 1; }
         inline Quad* getBottomQuad() { return quads + 4; }
 
-        inline Quad copyTopQuad() { return quads[5]; }
-        inline Quad copyBackQuad() { return quads[2]; }
-        inline Quad copyLeftQuad() { return quads[3]; }
-        inline Quad copyFrontQuad() { return quads[0]; }
-        inline Quad copyRightQuad() { return quads[1]; }
+        inline Quad copyTopQuad()    { return quads[5]; }
+        inline Quad copyBackQuad()   { return quads[2]; }
+        inline Quad copyLeftQuad()   { return quads[3]; }
+        inline Quad copyFrontQuad()  { return quads[0]; }
+        inline Quad copyRightQuad()  { return quads[1]; }
         inline Quad copyBottomQuad() { return quads[4]; }
 
         std::tuple<Quad**, size_t> getQuadRefs(uint8_t FLAGS);

@@ -13,7 +13,9 @@ namespace Geometry {
         Vertex vertices[VERTICES_PER_QUAD];
 
         // indices for rendering a quad
-        static constexpr std::array<unsigned int, 6> indices = { 0, 1, 2, 2, 1, 3 };
+        static constexpr std::array<unsigned int, 6> indices = { 0, 1, 2, 0, 2, 3 };
+
+        
 
         // constructors
         Quad() = default;
@@ -51,6 +53,11 @@ namespace Geometry {
 
         // add an offset to the quad, then scale it
         void addOffsetAndScale(float X, float Y, float Z, float scale);
+
+        bool operator==(const Quad& other) const;
+        bool operator!=(const Quad& other) const;
+
+        void setNormalizedDeviceCoordinates(float scale);
 
         void addOffset(const glm::vec3& offset);
         void addOffsetAndScale(const glm::vec4& offsetAndScale);

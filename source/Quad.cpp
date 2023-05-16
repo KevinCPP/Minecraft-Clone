@@ -23,6 +23,22 @@ namespace Geometry {
         memcpy(vertices, v, sizeof(Vertex) * VERTICES_PER_QUAD);
     }
 
+    bool Quad::operator==(const Quad& other) const {
+        for(size_t i = 0; i < VERTICES_PER_QUAD; i++) {
+            if(vertices[i] != other.vertices[i]) return false;
+        }
+
+        return true;
+    }
+
+    bool Quad::operator!=(const Quad& other) const {
+        for(size_t i = 0; i < VERTICES_PER_QUAD; i++) {
+            if(vertices[i] == other.vertices[i]) return false;
+        }
+
+        return true;
+    }
+
     // sets the texture coordinates of the vertices in the quad to a specific texture in the atlas.
     // width and height are how many "blocks" (textures) large it should be. Useful if you need to use
     // two texture slots in the texture atlas for a quad that is two blocks wide, for example
@@ -37,7 +53,7 @@ namespace Geometry {
         vertices[3].setTextureCoords(a->getTextureCoords(x + width, y) + glm::vec2(-tol, tol));
     } 
 
-    bool isFacingCamera(const glm::vec3& cameraPos) const {
+    bool Quad::isFacingCamera(const glm::vec3& cameraPos) const {
         glm::vec3 toCamera = glm::normalize(cameraPos - getCenter());
         return glm::dot(getNormal(), toCamera) < 0;
     }

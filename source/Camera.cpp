@@ -9,7 +9,7 @@ const float Camera::DEFAULT_YAW = -90.0f;
 
 Camera::Camera() {
     // initialize member variables to defaults
-    position = glm::vec3(0.0f, 0.0f, 0.0f);
+    position = glm::vec3(1.0f, 1.0f, 1.0f);
     worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
     sensitivity = DEFAULT_SENSITIVITY;
     movementSpeed = DEFAULT_SPEED;

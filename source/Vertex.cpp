@@ -67,4 +67,24 @@ namespace Geometry {
         assert(FLOATS_PER_VERTEX >= 9 && "vertex::getNormal, FLOATS_PER_VERTEX < 9"); 
         return glm::vec3(data[6], data[7], data[8]);
     }
+
+    bool Vertex::operator==(const Vertex& other) const {
+        for(size_t i = 0; i < FLOATS_PER_VERTEX; i++) {
+            if(data[i] != other.data[i]) return false;
+        }
+
+        return true;
+    }
+
+    bool Vertex::operator!=(const Vertex& other) const {
+        for(size_t i = 0; i < FLOATS_PER_VERTEX; i++) {
+            if(data[i] == other.data[i]) return false;
+        }
+
+        return true;
+    }
+
+
+
+
 }

@@ -42,6 +42,9 @@ namespace Geometry {
         // getters (floats)
         float getTextureArrayIndex();
 
+        bool operator==(const Vertex& other) const;
+        bool operator!=(const Vertex& other) const;
+
         // getters (glm vectors)
         glm::vec3 getPosition() const;
         glm::vec2 getTextureCoords() const;
