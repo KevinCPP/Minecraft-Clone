@@ -3,6 +3,7 @@ CXXFLAGS = -g -std=c++20 -Wall -Wextra -pedantic -Iinclude
 LDFLAGS =
 LIBS = -lGLEW -lglfw -lGL
 SRCDIR = source
+VENDORDIR = vendor
 INCDIR = include
 BUILDDIR = build
 TESTDIR = test
@@ -11,8 +12,8 @@ TARGET_TEST = test_app
 SRC_EXT = cpp
 
 # Recursively find all source files and corresponding object files
-SRCS = $(shell find $(SRCDIR) -type f -name *.$(SRC_EXT))
-OBJS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRCS:.$(SRC_EXT)=.o))
+SRCS = $(shell find $(SRCDIR) $(VENDORDIR) -type f -name *.$(SRC_EXT))
+OBJS = $(patsubst $(SRCDIR)/% $(VENDORDIR)/%,$(BUILDDIR)/%,$(SRCS:.$(SRC_EXT)=.o))
 
 # Recursively find all test source files and corresponding object files
 TEST_SRCS = $(shell find $(TESTDIR) -type f -name *.$(SRC_EXT))
@@ -32,6 +33,10 @@ $(TARGET_TEST): $(OBJS) $(TEST_OBJS)
 
 # Compile object files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRC_EXT)
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+$(BUILDDIR)/%.o: $(VENDORDIR)/%.$(SRC_EXT)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 

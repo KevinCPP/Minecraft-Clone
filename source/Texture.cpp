@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-#include "../include/stb_image.h"
+#include "../vendor/stb_image.h"
 
 const std::string DEFAULT_TEXTURE_FILE_PATH = "resources/textures/atlas.bmp";
 

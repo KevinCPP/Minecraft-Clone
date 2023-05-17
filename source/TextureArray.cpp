@@ -6,7 +6,7 @@
 #include "../include/TextureArray.h"
 #include "../include/Settings.h"
 
-#include "../include/stb_image.h"
+#include "../vendor/stb_image.h"
 
 TextureArray::TextureArray() {
     glGenTextures(1, &m_TextureID);

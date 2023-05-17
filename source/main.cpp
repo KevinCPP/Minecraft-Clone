@@ -21,8 +21,6 @@
 #include "../include/VertexBuffer.h"
 #include "../include/VertexBufferLayout.h"
 
-#include "../include/stb_image.h"
-
 #include "../test/test.h"
 
 using namespace Geometry;
