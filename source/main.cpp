@@ -104,8 +104,8 @@ int main() {
     chunk.removeBlock(6, 7, 5);
     chunk.setBlock(5, 6, 5, Blocks::Block(Blocks::STONE));
 
-//    GLCall(glEnable(GL_CULL_FACE));
-//    GLCall(glCullFace(GL_BACK));
+    GLCall(glEnable(GL_CULL_FACE));
+    GLCall(glCullFace(GL_BACK));
 
     std::vector<Quad> temp;
     std::vector<unsigned int> indices;

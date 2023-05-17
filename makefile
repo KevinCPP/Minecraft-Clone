@@ -1,56 +1,44 @@
+# define the C++ compiler to use
 CXX = g++
-CXXFLAGS = -g -std=c++20 -Wall -Wextra -pedantic -Iinclude
-LDFLAGS =
+
+# define any compile-time flags
+CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic -Iinclude
+
+# define any libraries to link into executable
 LIBS = -lGLEW -lglfw -lGL
-SRCDIR = source
-VENDORDIR = vendor
-INCDIR = include
-BUILDDIR = build
-TESTDIR = test
-TARGET = app
-TARGET_TEST = test_app
-SRC_EXT = cpp
 
-# Recursively find all source files and corresponding object files
-SRCS = $(shell find $(SRCDIR) $(VENDORDIR) -type f -name *.$(SRC_EXT))
-OBJS = $(patsubst $(SRCDIR)/% $(VENDORDIR)/%,$(BUILDDIR)/%,$(SRCS:.$(SRC_EXT)=.o))
+# define the C++ source files
+SRCS = $(wildcard source/*.cpp vendor/*.cpp)
+TEST_SRCS = $(wildcard test/*.cpp)
 
-# Recursively find all test source files and corresponding object files
-TEST_SRCS = $(shell find $(TESTDIR) -type f -name *.$(SRC_EXT))
-TEST_OBJS = $(patsubst $(TESTDIR)/%,$(BUILDDIR)/%,$(TEST_SRCS:.$(SRC_EXT)=.o))
+OBJS = $(addprefix build/, $(notdir $(SRCS:.cpp=.o)))
+TEST_OBJS = $(addprefix build/, $(notdir $(TEST_SRCS:.cpp=.o)))
 
-# Default target
-all: $(TARGET)
+# define the executable file 
+MAIN = app
+TEST_MAIN = test_app
 
-# Compile the main target
-$(TARGET): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+all: $(MAIN)
+	@echo  The app has been compiled
 
-# Compile the test target
-$(TARGET_TEST): CXXFLAGS += -DENABLE_TEST
-$(TARGET_TEST): $(OBJS) $(TEST_OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+test: $(TEST_MAIN)
+	@echo  The test app has been compiled
 
-# Compile object files
-$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRC_EXT)
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+$(MAIN): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(MAIN) $(OBJS) $(LIBS)
 
-$(BUILDDIR)/%.o: $(VENDORDIR)/%.$(SRC_EXT)
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+$(TEST_MAIN): $(OBJS) $(TEST_OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TEST_MAIN) $(OBJS) $(TEST_OBJS) $(LIBS)
 
-# Compile test object files
-$(BUILDDIR)/%.o: $(TESTDIR)/%.$(SRC_EXT)
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+build/%.o: source/%.cpp
+	$(CXX) $(CXXFLAGS) -c $<  -o $@
 
-# Test target
-test: $(TARGET_TEST)
+build/%.o: test/%.cpp
+	$(CXX) $(CXXFLAGS) -c $<  -o $@
 
-# Clean up
+build/%.o: vendor/%.cpp
+	$(CXX) $(CXXFLAGS) -c $<  -o $@
+
 clean:
-	rm -rf $(BUILDDIR) $(TARGET) $(TARGET_TEST)
-
-.PHONY: all test clean
+	$(RM) build/*.o *~ $(MAIN) $(TEST_MAIN)
 

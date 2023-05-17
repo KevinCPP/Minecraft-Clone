@@ -15,7 +15,6 @@
 #include "IndexBuffer.h"
 
 namespace World {
-
     class Region {
     private:
         using rd = Settings::renderDistance;
@@ -37,7 +36,6 @@ namespace World {
         
         
     };
-
 }
 
 #endif
