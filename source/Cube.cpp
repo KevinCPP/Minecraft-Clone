@@ -275,21 +275,6 @@ namespace Geometry {
         setBottomTextureCoords(a, x, y, width, height);
     }
 
-    void Cube::setFlagsTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint8_t FLAGS) {
-        if(FLAGS && TOP)
-            setTopTextureCoords(a, x, y, width, height);
-        if(FLAGS && LEFT)
-            setLeftTextureCoords(a, x, y, width, height);
-        if(FLAGS && BACK)
-            setBackTextureCoords(a, x, y, width, height);
-        if(FLAGS && FRONT)
-            setFrontTextureCoords(a, x, y, width, height);
-        if(FLAGS && RIGHT)
-            setRightTextureCoords(a, x, y, width, height);
-        if(FLAGS && BOTTOM)
-            setBottomTextureCoords(a, x, y, width, height);
-    }
-
     void Cube::setTopTextureArrayIndex(float index) {
         quads[5].setTextureArrayIndex(index);
     }
@@ -330,19 +315,39 @@ namespace Geometry {
         setTopTextureArrayIndex(index);
         setBottomTextureArrayIndex(index);
     }
+    
+    Quad* Cube::getQuad(Geometry::Direction dir) {
+        switch(dir) {
+            case TOP:
+                return quads + 5;
+            case LEFT:
+                return quads + 3;
+            case BACK:
+                return quads + 2;    
+            case RIGHT:
+                return quads + 1;
+            case FRONT:
+                return quads + 0;
+            case BOTTOM:
+                return quads + 4;
+        }
+    }
 
-    void Cube::setFlagsTextureArrayIndex(float index, uint8_t FLAGS) {
-        if(FLAGS && TOP)
-            setTopTextureArrayIndex(index);
-        if(FLAGS && BACK)
-            setBackTextureArrayIndex(index);
-        if(FLAGS && LEFT)
-            setLeftTextureArrayIndex(index);
-        if(FLAGS && RIGHT)
-            setRightTextureArrayIndex(index);
-        if(FLAGS && FRONT)
-            setFrontTextureArrayIndex(index);
-        if(FLAGS && BOTTOM)
-            setBottomTextureArrayIndex(index);
-    } 
+
+    Quad Cube::copyQuad(Geometry::Direction dir) const {
+        switch(dir) {
+            case TOP:
+                return quads[5];
+            case LEFT:
+                return quads[3];
+            case BACK:
+                return quads[2];    
+            case RIGHT:
+                return quads[1];
+            case FRONT:
+                return quads[0];
+            case BOTTOM:
+                return quads[4];
+        }
+    }
 }

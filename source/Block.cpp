@@ -32,8 +32,8 @@ namespace Blocks {
         return *this;
     }
 
-    std::optional<Cube> Block::getCube(float x, float y, float z) { 
-        std::optional<Cube> c = CubeFactory::getInstance().makeMaterialCube(mat);
+    std::optional<Geometry::Cube> Block::getCube(float x, float y, float z) { 
+        std::optional<Geometry::Cube> c = CubeFactory::getInstance().makeMaterialCube(mat);
         
         if(c.has_value())
             c.value().setPosition(x, y, z);

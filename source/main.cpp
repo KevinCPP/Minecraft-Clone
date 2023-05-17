@@ -29,6 +29,36 @@ using namespace Geometry;
 using namespace Blocks;
 using namespace World;
 
+void chunkIter(Chunk* c) {
+    std::cout << "SIZE: " << c->visibleQuads.size() << std::endl;
+    for(auto& p : c->visibleQuads) {
+        if(p.x != 0 && p.y != 0 && p.z != 0 && p.x != World::CHUNK_SIZE - 1 && p.y != World::CHUNK_SIZE - 1 && p.z != World::CHUNK_SIZE - 1) {
+            std::cout << p.x << " " << p.y << " " << p.z;
+            switch(p.face) {
+            case TOP:
+                std:: cout << " TOP";
+                break;
+            case LEFT:
+                std:: cout << " LEFT";
+                break;
+            case BACK:
+                std:: cout << " BACK";
+                break;
+            case RIGHT:
+                std:: cout << " RIGHT";
+                break;
+            case FRONT:
+                std:: cout << " FRONT";
+                break;
+            case BOTTOM:
+                std:: cout << " BOTTOM";
+                break;
+            }
+            std::cout << std::endl;
+        }
+    }
+}
+
 int main() {
 
 #ifdef ENABLE_TESTS
@@ -70,18 +100,38 @@ int main() {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     Chunk chunk;
-    chunk.makeStone();
-    chunk.findVisible();
-
-    std::vector<unsigned int> indices(chunk.visibleQuads.size() * 6);
-    for(size_t i = 0; i < chunk.visibleQuads.size(); i++) {
-        for(size_t j = 0; j < 6; j++) {
-            indices.push_back((i * 4) + Quad::indices[j]);
-        }
-    }
+    chunk.fill(Blocks::STONE);
+    chunk.removeBlock(5, 5, 5);
+    chunk.removeBlock(5, 6, 5);
+    chunk.removeBlock(6, 7, 5);
+    chunk.setBlock(5, 6, 5, Blocks::Block(Blocks::STONE));
 
 //    GLCall(glEnable(GL_CULL_FACE));
 //    GLCall(glCullFace(GL_BACK));
+
+    std::vector<Quad> temp;
+    std::vector<unsigned int> indices;
+    size_t counter = 0;
+    bool counting = false;
+    for(auto& p : chunk.visibleQuads) {
+        bool err = p.x == 0 && p.y == 0 && p.z == 0 && p.face == Geometry::LEFT;
+        for(auto i : Quad::indices) {
+            if(err) std::cout << "indices " << (temp.size() * 4) + i << " ";
+            indices.push_back((temp.size() * 4) + i);
+        }
+
+        Blocks::Material mat = chunk.getBlockMaterial(p.x, p.y, p.z);
+        Geometry::Cube thisCube = CubeFactory::getInstance().makeMaterialCube(mat).value();
+        thisCube.setPosition(p.x, p.y, p.z);
+        thisCube.setNormalizedDeviceCoordinates(16.0f);
+        Quad q = thisCube.copyQuad((Geometry::Direction)p.face);
+        temp.push_back(q);
+
+    }
+    
+    std::cout << std::endl;
+    std::cout << "COUNTER: " << counter << std::endl;
+    std::cout << "SIZES: " << temp.size() << " " << indices.size() << std::endl;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -90,7 +140,7 @@ int main() {
     std::cout << chunk.visibleQuads.size() << std::endl;
 
     VertexArray va;
-    VertexBuffer vb((float*)chunk.visibleQuads.data(), chunk.visibleQuads.size() * 6 * sizeof(float));
+    VertexBuffer vb((float*)temp.data(), temp.size() * FLOATS_PER_QUAD * sizeof(float));
 
     VertexBufferLayout layout;
     layout.push_float(3);

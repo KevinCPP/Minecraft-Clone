@@ -52,7 +52,15 @@ namespace World {
 
         return volume[x][y][z].mat;
     }
-    
+
+    void Chunk::setOffsetCoordinates(int16_t X, int16_t Y, int16_t Z) {
+        
+        
+        chunkX = X;
+        chunkY = Y;
+        chunkZ = Z;
+    }
+
     // sets a block at a given x, y, and z chunk coordinate. Returns false if
     // x, y, and z are out of bounds, otherwise sets the block and returns true
     bool Chunk::setBlock(uint16_t x, uint16_t y, uint16_t z, const Blocks::Block& b) {
@@ -60,6 +68,7 @@ namespace World {
             return false;
 
         volume[x][y][z] = b;
+        updateBlockVisibility(x, y, z);
         return true;
     }
     
@@ -69,20 +78,21 @@ namespace World {
             return false;
 
         volume[x][y][z].mat = Blocks::AIR;
+        updateBlockVisibility(x, y, z);
         return true;
     }
     
     // checks if a block at a given x, y, and z coordinate is transparent. Contains an assertion that
     // x, y, and z are inside chunk boundaries, because unlike setBlock and removeBlock, there would be
     // ambiguity if we just returned true/false (was it actually transparent or was xyz out of bounds?)
-    bool isBlockTransparent(uint16_t x, uint16_t y, uint16_t z) const {
+    bool Chunk::isBlockTransparent(uint16_t x, uint16_t y, uint16_t z) const {
         assert(isInsideChunkSize(x, y, z) && "Attempted to check if a block was transparent, outside of chunk bounds!");
         
         return Blocks::isTransparent(volume[x][y][z].mat);
     }
 
     // simply sets pointers to the adjacent chunks. NULL is acceptable
-    void setAdjacentChunks(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) {
+    void Chunk::setAdjacentChunks(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) {
         adjTop = top;
         adjLeft = left;
         adjBack = back;
@@ -91,152 +101,131 @@ namespace World {
         adjBottom = bottom;
     }
 
-    void Chunk::updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z, bool NDC, uint32_t NDCfactor) {
-        // we can't perform this operation if the x, y, and z values are out of bounds. that is a fatal error
-        assert(isInsideChunkSize(x, y, z) && "Attempted to update block visibility for a block that was outside the chunk!");
-
-        // get the relative coordinates of the block (using chunk offset coords)
+    void Chunk::removeFacesAt(uint16_t x, uint16_t y, uint16_t z) {
+        // get relative coordinates to use for the quad data
         uint32_t rx = chunkX + x;
         uint32_t ry = chunkY + y;
         uint32_t rz = chunkZ + z;
-
-        // if the relative coords (that we're using for the actual vertex data) is larger than the
-        // maximum distance we are rendering, that means the division operation would end up being
-        // outside of the NDC. That is a fatal error.
-        if(NDC) {
-            assert(rx <= NDCfactor && "attempting to create cube outside of NDC!");
-            assert(ry <= NDCfactor && "attempting to create cube outside of NDC!");
-            assert(rz <= NDCfactor && "attempting to create cube outside of NDC!");
+        
+        // material of the block at x, y ,z
+        Blocks::Material cm = volume[x][y][z].mat;
+         
+        // if x, y, z is not transparent, that means it is solid. Therefore, the adjacent quads are occluded
+        // This if statement will handle all quads that are inside this chunk and are adjacent to the solid block
+        if(!Blocks::isTransparent(cm)) {
+            if(x != 0)
+                visibleQuads.erase(visibleQuadData(rx-1, ry, rz, Geometry::RIGHT));
+            if(y != 0)
+                visibleQuads.erase(visibleQuadData(rx, ry-1, rz, Geometry::TOP));
+            if(z != 0)
+                visibleQuads.erase(visibleQuadData(rx, ry, rz-1, Geometry::BACK));
+            if(x != CHUNK_SIZE - 1)
+                visibleQuads.erase(visibleQuadData(rx+1, ry, rz, Geometry::LEFT));
+            if(y != CHUNK_SIZE - 1)
+                visibleQuads.erase(visibleQuadData(rx, ry+1, rz, Geometry::BOTTOM));
+            if(z != CHUNK_SIZE - 1)
+                visibleQuads.erase(visibleQuadData(rx, ry, rz+1, Geometry::FRONT));
+        } else if (cm == Blocks::AIR) {
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::TOP));
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::LEFT));
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::BACK));
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::RIGHT));
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::FRONT));
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::BOTTOM));
         }
 
-        // start by getting cube from the current block
-        std::optional<Geometry::Cube> currentCube = volume[x][y][z].getCube(rx, ry, rz);
+        bool cleftTransparent   = (adjLeft   == NULL || adjLeft->isBlockTransparent(CHUNK_SIZE - 1, y, z));
+        bool cbottomTransparent = (adjBottom == NULL || adjBottom->isBlockTransparent(x, CHUNK_SIZE - 1, z));
+        bool cfrontTransparent  = (adjFront  == NULL || adjFront->isBlockTransparent(x, y, CHUNK_SIZE - 1));
+        bool crightTransparent  = (adjRight  == NULL || adjRight->isBlockTransparent(0, y, z));
+        bool ctopTransparent    = (adjTop    == NULL || adjTop->isBlockTransparent(x, 0, z));
+        bool cbackTransparent   = (adjBack   == NULL || adjBack->isBlockTransparent(x, y, 0));
         
-        // if the cube has a value and we're using NDC, set it's NDC.
-        if(NDC && currentCube.has_value())
-            currentCube.value().setNormalizedDeviceCoordinates(NDCfactor);
-
-        // if the option is nullopt, the material is air which is transparent. If it's not
-        // nullopt, it could still be another transparent material, so check to see if it's
-        // one of those. If it's transparent, we will add the adjacent cube faces to the
-        // list of visible quads
-        if(currentCube == std::nullopt || Blocks::isTransparent(volume[x][y][z].mat)) {
-            std::optional<Geometry::Cube> adjacentCube;
-
-            // since both of those checks passed, we have to get all 6 adjacent cubes,
-            // and add the faces that are adjacent to the current cube to the list of
-            // visible faces. However, we also have to check all 6 to make sure they
-            // are not out of bounds, since out of bounds blocks will be handled by
-            // a later section of the code that will retrieve the block from the adjacent
-            // chunk pointers that were passed to this function
-
-            // check adjacent block to the left
-            if(x != 0) {
-                adjacentCube = volume[x-1][y][z].getCube(rx-1, ry, rz);
-                if(NDC)
-                    adjacentCube.setNormalizedDeviceCoordinates(NDCfactor);
-
-                if(adjacentCube.has_value())
-                    vq.push_back(std::move(adjacentCube.value().copyRightQuad()));
-            }
-            
-            // check adjacent block on the bottom
-            if(y != 0) {
-                adjacentCube = volume[x][y-1][z].getCube(rx, ry-1, rz);
-                if(NDC)
-                    adjacentCube.setNormalizedDeviceCoordinates(NDCfactor);
-
-                if(adjacentCube.has_value())
-                    vq.push_back(std::move(adjacentCube.value().copyTopQuad()));
-            }
-            
-            // check adjacent block in front (north)
-            if(z != 0) {
-                adjacentCube = volume[x][y][z-1].getCube(rx, ry, rz-1);
-                if(NDC)
-                    adjacentCube.setNormalizedDeviceCoordinates(NDCfactor);
-
-                if(adjacentCube.has_value())
-                    vq.push_back(std::move(adjacentCube.value().copyBackQuad()));
-            }
-
-            // check adjacent block to the right
-            if(x != CHUNK_SIZE - 1) {
-                adjacentCube = volume[x+1][y][z].getCube(rx+1, ry, rz);
-                if(NDC)
-                    adjacentCube.setNormalizedDeviceCoordinates(NDCfactor);
-
-                if(adjacentCube.has_value())
-                    vq.push_back(std::move(adjacentCube.value().copyLeftQuad()));
-            }
-
-            // check adjacent block on the top
-            if(y != CHUNK_SIZE - 1) {
-                adjacentCube = volume[x][y+1][z].getCube(rx, ry+1, rz);
-                if(NDC)
-                    adjacentCube.setNormalizedDeviceCoordinates(NDCfactor);
-
-                if(adjacentCube.has_value())
-                    vq.push_back(std::move(adjacentCube.value().copyBottomQuad()));
-            }
-
-            // check adjacent cube in the back (south)
-            if(z != CHUNK_SIZE - 1) {
-                adjacentCube = volume[x][y][z+1].getCube(rx, ry, rz+1);
-                if(NDC)
-                    adjacentCube.setNormalizedDeviceCoordinates(NDCfactor);
-
-                if(adjacentCube.has_value())
-                    vq.push_back(std::move(adjacentCube.value().copyBottomQuad()));
-            } 
-            
-            // Before, we only checked to see if the block was transparent. That
-            // includes blocks like glass and water, but also includes air. We
-            // needed to do the previous operations no matter what if this block
-            // is visible; however, if we keep going from here and the current block
-            // is air, we might end up adding it to the list of visible blocks, and
-            // air should never be a visible block, even though other transparent blocks
-            // can. Therefore, we continue to the next iteration if it's air (nullopt)
-            if(currentCube == std::nullopt)
-                continue;
-        }
-        
-        // If the current block is AIR, it should never reach this point, since the
-        // previous IF statement has a continue.
-        assert(currentCube.has_value() && "current cube passed checks but is AIR!");
-
-       
-        // if we are on the chunk's edge, and the adjacent chunk is either NULL (in which case we'll treat it as if it's transparent)
-        // or if the adjacent chunk is valid AND the corresponding block is transparent -- add the quad facing it to the list of visible quads
-        bool topTransparent    = (y == CHUNK_SIZE - 1) && ((top    == NULL) || ((top    != NULL) && top->isBlockTransparent(x, 0, z)));
-        bool leftTransparent   = (x == 0)              && ((left   == NULL) || ((left   != NULL) && left->isBlockTransparent(CHUNK_SIZE - 1, y, z)));
-        bool backTransparent   = (z == CHUNK_SIZE - 1) && ((back   == NULL) || ((back   != NULL) && back->isBlockTransparent(x, y, 0)));
-        bool rightTransparent  = (x == CHUNK_SIZE - 1) && ((right  == NULL) || ((right  != NULL) && right->isBlockTransparent(0, y, z)));
-        bool frontTransparent  = (z == 0             ) && ((front  == NULL) || ((front  != NULL) && front->isBlockTransparent(x, y, CHUNK_SIZE - 1)));
-        bool bottomTransparent = (y == 0             ) && ((bottom == NULL) || ((bottom != NULL) && bottom->isBlockTransparent(x, CHUNK_SIZE - 1, z)));
-
-
-        // if the adjacent chunk has a transparent block, add the face of the
-        // current block that is facing that transparent block to the list of
-        // visible quads
-        if(topTransparent)
-            vq.push_back(std::move(currentCube.value().copyTopQuad()));
-        if(leftTransparent)
-            vq.push_back(std::move(currentCube.value().copyLeftQuad()));
-        if(backTransparent)
-            vq.push_back(std::move(currentCube.value().copyBackQuad()));
-        if(rightTransparent)
-            vq.push_back(std::move(currentCube.value().copyRightQuad()));
-        if(frontTransparent)
-            vq.push_back(std::move(currentCube.value().copyFrontQuad()));
-        if(bottomTransparent)
-            vq.push_back(std::move(currentCube.value().copyBottomQuad()));
-
+        // if we're at the edge and the adjacent chunk does not have a transparent block, erase the face on this block which is
+        // facing that solid block, since it would be occluded
+        if((x == 0) && !cleftTransparent)
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::LEFT));
+        if((y == 0) && !cbottomTransparent)
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::BOTTOM));
+        if((z == 0) && !cfrontTransparent)
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::FRONT));
+        if((x == CHUNK_SIZE - 1) && !crightTransparent)
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::RIGHT));
+        if((y == CHUNK_SIZE - 1) && !ctopTransparent) 
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::TOP));
+        if((z == CHUNK_SIZE - 1) && !cbackTransparent)
+            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::BACK));
     }
 
-    void Chunk::findVisible(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) {
-        // store every unique quad that we need to render
-        std::vector<Geometry::Quad> vq;
+    void Chunk::addFacesAt(uint16_t x, uint16_t y, uint16_t z) {
+        uint32_t rx = chunkX + x;
+        uint32_t ry = chunkY + y;
+        uint32_t rz = chunkZ + z;
+    
+        Blocks::Material cm = volume[x][y][z].mat;
+        
+        // first, if this block is transparent, add all faces that are facing it since those would all be visible
+        if(Blocks::isTransparent(cm)) {
+            // we'll deal with edges later, for now, just check the adjacent block in this chunk
+            // and add it's corresponding face if it isn't AIR.
+            if(x != 0 && volume[x-1][y][z].mat != AIR)
+                visibleQuads.insert(std::move(visibleQuadData(rx-1, ry, rz, Geometry::RIGHT)));
+            if(y != 0 && volume[x][y-1][z].mat != AIR)
+                visibleQuads.insert(std::move(visibleQuadData(rx, ry-1, rz, Geometry::TOP)));
+            if(z != 0 && volume[x][y][z-1].mat != AIR)
+                visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz-1, Geometry::BACK)));
+            if(x != CHUNK_SIZE - 1 && volume[x+1][y][z].mat != AIR)
+                visibleQuads.insert(std::move(visibleQuadData(rx+1, ry, rz, Geometry::LEFT)));
+            if(y != CHUNK_SIZE - 1 && volume[x][y+1][z].mat != AIR)
+                visibleQuads.insert(std::move(visibleQuadData(rx, ry+1, rz, Geometry::BOTTOM)));
+            if(z != CHUNK_SIZE - 1 && volume[x][y][z+1].mat != AIR)
+                visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz+1, Geometry::FRONT)));
+            
+            // the rest of this function just adds this blocks' faces. If it's air, it will never
+            // have a visible face, so we can end the function here.
+            if(cm == Blocks::AIR)
+                return;
+        }
+      
+        // check if the adjacent block is transparent
+        bool leftTransparent    = (x != 0              && Blocks::isTransparent(volume[x-1][y][z].mat));
+        bool bottomTransparent  = (y != 0              && Blocks::isTransparent(volume[x][y-1][z].mat));
+        bool frontTransparent   = (z != 0              && Blocks::isTransparent(volume[x][y][z-1].mat));
+        bool rightTransparent   = (x != CHUNK_SIZE - 1 && Blocks::isTransparent(volume[x+1][y][z].mat));
+        bool topTransparent     = (y != CHUNK_SIZE - 1 && Blocks::isTransparent(volume[x][y+1][z].mat));
+        bool backTransparent    = (z != CHUNK_SIZE - 1 && Blocks::isTransparent(volume[x][y][z+1].mat));
+        
+        // if we're at the edge, check if the corresponding block in the adjacent chunk is transparent
+        bool cleftTransparent   = (x == 0)              && (adjLeft   == NULL || adjLeft->isBlockTransparent(CHUNK_SIZE - 1, y, z));
+        bool cbottomTransparent = (y == 0)              && (adjBottom == NULL || adjBottom->isBlockTransparent(x, CHUNK_SIZE - 1, z));
+        bool cfrontTransparent  = (z == 0)              && (adjFront  == NULL || adjFront->isBlockTransparent(x, y, CHUNK_SIZE - 1));
+        bool crightTransparent  = (x == CHUNK_SIZE - 1) && (adjRight  == NULL || adjRight->isBlockTransparent(0, y, z));
+        bool ctopTransparent    = (y == CHUNK_SIZE - 1) && (adjTop    == NULL || adjTop->isBlockTransparent(x, 0, z));
+        bool cbackTransparent   = (z == CHUNK_SIZE - 1) && (adjBack   == NULL || adjBack->isBlockTransparent(x, y, 0));
+
+        // at this point, the block cannot be AIR since the function would return if it was air.
+        // every other block is visible, so if this block has any adjacent transparent blocks,
+        // add the quad that is facing that transparent block to the list of visible quads
+        if(leftTransparent || cleftTransparent)
+            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::LEFT)));
+        if(bottomTransparent || cbottomTransparent)
+            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::BOTTOM)));
+        if(frontTransparent || cfrontTransparent)
+            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::FRONT)));
+        if(rightTransparent || crightTransparent)
+            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::RIGHT)));
+        if(topTransparent || ctopTransparent)
+            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::TOP)));
+        if(backTransparent || cbackTransparent)
+            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::BACK))); 
+    }
+
+    void Chunk::updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z) {
+        removeFacesAt(x, y, z); 
+        addFacesAt(x, y, z);
+    }
+
+    void Chunk::findVisible() {
         if(isDirty == false)
             std::clog << "NOTE: calling findVisible on a chunk that isn't marked as dirty. Continuing anyways." << std::endl;
 
@@ -244,115 +233,12 @@ namespace World {
         for(size_t x = 0; x < CHUNK_SIZE; x++)
         for(size_t y = 0; y < CHUNK_SIZE; y++)
         for(size_t z = 0; z < CHUNK_SIZE; z++) {
-            // start by getting cube from the current block
-            std::optional<Geometry::Cube> currentCube = volume[x][y][z].getCube(x, y, z);
-
-            if(currentCube.has_value())
-                currentCube.value().setNormalizedDeviceCoordinates(CHUNK_SIZE * Settings::renderDistance);
-            
-            // if the option is nullopt, the material is air which is transparent. If it's not
-            // nullopt, it could still be another transparent material, so check to see if it's
-            // one of those. If it's transparent, we will add the adjacent cube faces to the
-            // list of visible quads
-            if(currentCube == std::nullopt || Blocks::isTransparent(volume[x][y][z].mat)) {
-                std::optional<Geometry::Cube> adjacentCube;
-
-                // since both of those checks passed, we have to get all 6 adjacent cubes,
-                // and add the faces that are adjacent to the current cube to the list of
-                // visible faces. However, we also have to check all 6 to make sure they
-                // are not out of bounds, since out of bounds blocks will be handled by
-                // a later section of the code that will retrieve the block from the adjacent
-                // chunk pointers that were passed to this function
-
-                // check adjacent block to the left
-                if(x != 0) {
-                    adjacentCube = volume[x-1][y][z].getCube(x-1, y, z);
-                    if(adjacentCube.has_value())
-                        vq.push_back(std::move(adjacentCube.value().copyRightQuad()));
-                }
-                
-                // check adjacent block on the bottom
-                if(y != 0) {
-                    adjacentCube = volume[x][y-1][z].getCube(x, y-1, z);
-                    if(adjacentCube.has_value())
-                        vq.push_back(std::move(adjacentCube.value().copyTopQuad()));
-                }
-                
-                // check adjacent block in front (north)
-                if(z != 0) {
-                    adjacentCube = volume[x][y][z-1].getCube(x, y, z-1);
-                    if(adjacentCube.has_value())
-                        vq.push_back(std::move(adjacentCube.value().copyBackQuad()));
-                }
-
-                // check adjacent block to the right
-                if(x != CHUNK_SIZE - 1) {
-                    adjacentCube = volume[x+1][y][z].getCube(x+1, y, z);
-                    if(adjacentCube.has_value())
-                        vq.push_back(std::move(adjacentCube.value().copyLeftQuad()));
-                }
-
-                // check adjacent block on the top
-                if(y != CHUNK_SIZE - 1) {
-                    adjacentCube = volume[x][y+1][z].getCube(x, y+1, z);
-                    if(adjacentCube.has_value())
-                        vq.push_back(std::move(adjacentCube.value().copyBottomQuad()));
-                }
-
-                // check adjacent cube in the back (south)
-                if(z != CHUNK_SIZE - 1) {
-                    adjacentCube = volume[x][y][z+1].getCube(x, y, z+1);
-                    if(adjacentCube.has_value())
-                        vq.push_back(std::move(adjacentCube.value().copyBottomQuad()));
-                } 
-                
-                // Before, we only checked to see if the block was transparent. That
-                // includes blocks like glass and water, but also includes air. We
-                // needed to do the previous operations no matter what if this block
-                // is visible; however, if we keep going from here and the current block
-                // is air, we might end up adding it to the list of visible blocks, and
-                // air should never be a visible block, even though other transparent blocks
-                // can. Therefore, we continue to the next iteration if it's air (nullopt)
-                if(currentCube == std::nullopt)
-                    continue;
-            }
-            
-            // If the current block is AIR, it should never reach this point, since the
-            // previous IF statement has a continue.
-            assert(currentCube.has_value() && "current cube passed checks but is AIR!");
-
-           
-            // if we are on the chunk's edge, and the adjacent chunk is either NULL (in which case we'll treat it as if it's transparent)
-            // or if the adjacent chunk is valid AND the corresponding block is transparent -- add the quad facing it to the list of visible quads
-            bool topTransparent    = (y == CHUNK_SIZE - 1) && ((top    == NULL) || ((top    != NULL) && top->isBlockTransparent(x, 0, z)));
-            bool leftTransparent   = (x == 0)              && ((left   == NULL) || ((left   != NULL) && left->isBlockTransparent(CHUNK_SIZE - 1, y, z)));
-            bool backTransparent   = (z == CHUNK_SIZE - 1) && ((back   == NULL) || ((back   != NULL) && back->isBlockTransparent(x, y, 0)));
-            bool rightTransparent  = (x == CHUNK_SIZE - 1) && ((right  == NULL) || ((right  != NULL) && right->isBlockTransparent(0, y, z)));
-            bool frontTransparent  = (z == 0             ) && ((front  == NULL) || ((front  != NULL) && front->isBlockTransparent(x, y, CHUNK_SIZE - 1)));
-            bool bottomTransparent = (y == 0             ) && ((bottom == NULL) || ((bottom != NULL) && bottom->isBlockTransparent(x, CHUNK_SIZE - 1, z)));
-
-
-            // if the adjacent chunk has a transparent block, add the face of the
-            // current block that is facing that transparent block to the list of
-            // visible quads
-            if(topTransparent)
-                vq.push_back(std::move(currentCube.value().copyTopQuad()));
-            if(leftTransparent)
-                vq.push_back(std::move(currentCube.value().copyLeftQuad()));
-            if(backTransparent)
-                vq.push_back(std::move(currentCube.value().copyBackQuad()));
-            if(rightTransparent)
-                vq.push_back(std::move(currentCube.value().copyRightQuad()));
-            if(frontTransparent)
-                vq.push_back(std::move(currentCube.value().copyFrontQuad()));
-            if(bottomTransparent)
-                vq.push_back(std::move(currentCube.value().copyBottomQuad()));
+            addFacesAt(x, y, z);
         }
         
         // finally, move vq into visibleQuads and mark the chunk as not dirty 
-        std::cout << "finished culling invisible quads. Vector size: " << vq.size() << std::endl;
+        std::cout << "finished culling invisible quads. set size: " << visibleQuads.size() << std::endl;
 
-        visibleQuads = std::move(vq);
         isDirty = false;
     }
 
@@ -361,6 +247,8 @@ namespace World {
         for(size_t y = 0; y < CHUNK_SIZE; y++)
         for(size_t z = 0; z < CHUNK_SIZE; z++)
             volume[x][y][z].mat = mat;
+    
+        findVisible();
     }
 }
 

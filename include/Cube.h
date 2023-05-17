@@ -10,13 +10,6 @@ namespace Geometry {
         // underlying data structure for a cube
         Quad quads[QUADS_PER_CUBE];
 
-        static const uint8_t TOP        = 0b00100000;
-        static const uint8_t LEFT       = 0b00001000;
-        static const uint8_t BACK       = 0b00000100;
-        static const uint8_t RIGHT      = 0b00000010;
-        static const uint8_t FRONT      = 0b00000001;
-        static const uint8_t BOTTOM     = 0b00010000;
-
         static constexpr std::array<unsigned int, 36> indices = {
             0,  1,  2,  0,  2,  3,  // front
             4,  5,  6,  4,  6,  7,  // right side
@@ -114,8 +107,6 @@ namespace Geometry {
         // sets the texture coords for both the top and bottom
         void setTopBottomTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-        // sets the texture coords for the flagged sides (example: FLAGS = Cube::TOP | Cube::LEFT)
-        void setFlagsTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint8_t FLAGS);
 
         void setTopTextureArrayIndex(float index);
         void setBackTextureArrayIndex(float index);
@@ -127,26 +118,9 @@ namespace Geometry {
         void setAllTextureArrayIndex(float index);
         void setSidesTextureArrayIndex(float index);
         void setTopBottomTextureArrayIndex(float index);
-        void setFlagsTextureArrayIndex(float index, uint8_t FLAGS);
 
-        // get a quad
-        inline Quad* getTopQuad()    { return quads + 5; }
-        inline Quad* getBackQuad()   { return quads + 2; }
-        inline Quad* getLeftQuad()   { return quads + 3; }
-        inline Quad* getFrontQuad()  { return quads + 0; }
-        inline Quad* getRightQuad()  { return quads + 1; }
-        inline Quad* getBottomQuad() { return quads + 4; }
-
-        inline Quad copyTopQuad()    { return quads[5]; }
-        inline Quad copyBackQuad()   { return quads[2]; }
-        inline Quad copyLeftQuad()   { return quads[3]; }
-        inline Quad copyFrontQuad()  { return quads[0]; }
-        inline Quad copyRightQuad()  { return quads[1]; }
-        inline Quad copyBottomQuad() { return quads[4]; }
-
-        std::tuple<Quad**, size_t> getQuadRefs(uint8_t FLAGS);
-
-        std::tuple<Quad*, size_t> getQuadCopies(uint8_t FLAGS);
+        Quad* getQuad(Geometry::Direction dir);
+        Quad copyQuad(Geometry::Direction dir) const;
     };
 
     // converts an array of cubes into an array of floats 
