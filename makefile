@@ -1,38 +1,45 @@
+# define the C++ compiler to use
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic -I include
-LDLIBS = -lGLEW -lglfw -lGL
 
-SRC_DIR = source
-INC_DIR = include
-TEST_DIR = test
-BUILD_DIR = build
+# define any compile-time flags
+CXXFLAGS = -g -std=c++20 -Wall -Wextra -pedantic -Iinclude
 
-# Find all source files in source directory
-SOURCES := $(shell find $(SRC_DIR) -name '*.cpp')
-# Create a list of object files from the source files
-OBJECTS := $(addprefix $(BUILD_DIR)/,$(notdir $(SOURCES:.cpp=.o)))
-# Create a list of dependencies for each object file
-DEPS := $(OBJECTS:.o=.d)
+# define any libraries to link into executable
+LIBS = -lGLEW -lglfw -lGL
 
-# Compile all object files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+# define the C++ source files
+SRCS = $(wildcard source/*.cpp vendor/*.cpp)
+TEST_SRCS = $(wildcard test/*.cpp)
 
-# Link object files into executable
-app: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(LDLIBS) $^ -o $@
+OBJS = $(addprefix build/, $(notdir $(SRCS:.cpp=.o)))
+TEST_OBJS = $(addprefix build/, $(notdir $(TEST_SRCS:.cpp=.o)))
 
-# Compile all test files
-tests: $(wildcard $(TEST_DIR)/*.cpp) $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(LDLIBS) $^ -o $@
+# define the executable file 
+MAIN = app
+TEST_MAIN = test_app
 
-.PHONY: clean
+all: $(MAIN)
+	@echo  The app has been compiled
 
-# Remove all object files and executable
+test: CXXFLAGS += -DENABLE_TESTS
+test: $(TEST_MAIN)
+	@echo  The test app has been compiled
+
+$(MAIN): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(MAIN) $(OBJS) $(LIBS)
+
+$(TEST_MAIN): $(OBJS) $(TEST_OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TEST_MAIN) $(OBJS) $(TEST_OBJS) $(LIBS)
+
+build/%.o: source/%.cpp
+	$(CXX) $(CXXFLAGS) -c $<  -o $@
+
+build/%.o: test/%.cpp
+	$(CXX) $(CXXFLAGS) -c $<  -o $@
+
+build/%.o: vendor/%.cpp
+	$(CXX) $(CXXFLAGS) -c $<  -o $@
+
 clean:
-	$(RM) $(BUILD_DIR)/*.o $(BUILD_DIR)/*.d app tests
-
-# Include dependency files
--include $(DEPS)
+	$(RM) build/*.o *~ $(MAIN) $(TEST_MAIN)
 
