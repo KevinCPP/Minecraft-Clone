@@ -41,7 +41,7 @@ namespace World {
     };
 
     class Chunk {
-    public:
+    private:
         // stores the blocks in the chunk
         Blocks::Block volume[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         
@@ -55,25 +55,16 @@ namespace World {
         Chunk* adjRight;
         Chunk* adjFront;
         Chunk* adjBottom;
-
-        // marks if a chunk needs to redo the findVisible() operation
-        bool isDirty; 
         
-        // stores the offsets of the chunk which will be used when performing findVisible()
-        // to offset the positions of the cubes. Should be relative to the rendered space 
-//        int16_t chunkX, chunkY, chunkZ;
-
+        // will add/remove faces from visibleQuads at x, y, and z. Should both be used when a block is modified.
         void addFacesAt(uint16_t x, uint16_t y, uint16_t z);
         void removeFacesAt(uint16_t x, uint16_t y, uint16_t z);
-    //public:
+    public:
         // default constructor
         Chunk();
         
-        // initializes chunkX, chunkY, chunkZ
-        Chunk(int16_t X, int16_t Y, int16_t Z);
-        
-        // initializes X, Y, and Z coordinates as well as adjacent chunks
-        Chunk(int16_t X, int16_t Y, int16_t Z, Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom);
+        // initializes adjacent chunks
+        Chunk(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom);
 
         // returns true if a set of x, y, and z values are within the bounds of 0, CHUNK_SIZE - 1
         bool isInsideChunkSize(uint16_t x, uint16_t y, uint16_t z) const;
@@ -81,8 +72,8 @@ namespace World {
         // returns the block material at x, y, z, or air if xyz are out of bounds
         Blocks::Material getBlockMaterial(uint16_t x, uint16_t y, uint16_t z) const;
 
-        // updates the chunk's X, Y, Z offset coordinates
-        void setOffsetCoordinates(int16_t X, int16_t Y, int16_t Z);
+        // returns a copy of the block at x, y, z
+        Blocks::Block copyBlock(uint16_t x, uint16_t y, uint16_t z) const;
 
         // sets a block, relative to chunk coordinates. 
         bool setBlock(uint16_t x, uint16_t y, uint16_t z, const Blocks::Block& b);
@@ -104,8 +95,10 @@ namespace World {
 
         // fills the chunk with a given material
         void fill(const Blocks::Material& mat = Blocks::STONE);
+    
+        auto visibleQuadsBegin() const { return visibleQuads.begin(); }
+        auto visibleQuadsEnd() const { return visibleQuads.end(); }
     };
-
 }
 
 #endif

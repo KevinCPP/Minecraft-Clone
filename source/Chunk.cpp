@@ -16,48 +16,33 @@ namespace World {
         adjRight = NULL;
         adjFront = NULL;
         adjBottom = NULL;
-        
-        // since the findVisible() operation has not been executed for this chunk
-        // mark the chunk as dirty initially.
-        isDirty = true;
-        
-        // if no offset coordinates are provided, default to 0, in which case the
-        // vertex data for the Quads placed in visibleQuads will just be relative to
-        // this specific chunk.
-//        chunkX = 0;
-//        chunkY = 0;
-//        chunkZ = 0;
+    } 
+    
+    // constructor that also initializes adjacent chunks
+    Chunk::Chunk(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) {
+        setAdjacentChunks(top, left, back, right, front, bottom); 
     }
     
-    // defer to default constructor to initialize the chunk,
-    // then set the X Y and Z offsets
-    Chunk::Chunk(int16_t X, int16_t Y, int16_t Z) : Chunk() {
-//        setOffsetCoordinates(X, Y, Z);
-    }
-
-    // defer to the Chunk(X, Y, Z) constructor to initialize all default
-    // member variables as well as the X Y and Z offsets, then set the
-    // adjacent chunks
-    Chunk::Chunk(int16_t X, int16_t Y, int16_t Z, Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) : Chunk(X, Y, Z) {
-        setAdjacentChunks(top, left, back, right, front, bottom);    
-    }
-
+    // returns true if x, y, and z are inside the bounds of the chunk (less than CHUNK_SIZE)
     bool Chunk::isInsideChunkSize(uint16_t x, uint16_t y, uint16_t z) const {
         return (x < CHUNK_SIZE && y < CHUNK_SIZE && z < CHUNK_SIZE); 
     }
    
+    // gets the material of a block at a specific location
     Blocks::Material Chunk::getBlockMaterial(uint16_t x, uint16_t y, uint16_t z) const {
         if(!isInsideChunkSize(x, y, z))
             return Blocks::AIR;
 
         return volume[x][y][z].mat;
     }
+    
+    // returns a copy of the block at a specific location
+    Blocks::Block Chunk::copyBlock(uint16_t x, uint16_t y, uint16_t z) const {
+        if(!isInsideChunkSize(x, y, z))
+            return Blocks::Block(Blocks::AIR);
 
-//    void Chunk::setOffsetCoordinates(int16_t X, int16_t Y, int16_t Z) {
-//        chunkX = X;
-//        chunkY = Y;
-//        chunkZ = Z;
-//    }
+        return volume[x][y][z];
+    }
 
     // sets a block at a given x, y, and z chunk coordinate. Returns false if
     // x, y, and z are out of bounds, otherwise sets the block and returns true
@@ -157,6 +142,9 @@ namespace World {
     }
 
     void Chunk::addFacesAt(uint16_t x, uint16_t y, uint16_t z) {
+        // same as before, relative coordinates removed from chunk,
+        // but I will leave this here so I can easily add it back later if needed without
+        // modifying any additional lines
         uint32_t rx = x;
         uint32_t ry = y;
         uint32_t rz = z;
@@ -225,28 +213,26 @@ namespace World {
     }
 
     void Chunk::findVisible() {
-        if(isDirty == false)
-            std::clog << "NOTE: calling findVisible on a chunk that isn't marked as dirty. Continuing anyways." << std::endl;
-
+        visibleQuads.clear();
         // iterate through all blocks to cull invisible ones
         for(size_t x = 0; x < CHUNK_SIZE; x++)
         for(size_t y = 0; y < CHUNK_SIZE; y++)
         for(size_t z = 0; z < CHUNK_SIZE; z++) {
+            // if we clear the set, only this function is needed since there
+            // won't be any blocks that need removing, since we'll be adding
+            // all the visible faces in for the first time.
             addFacesAt(x, y, z);
         }
-        
-        // finally, move vq into visibleQuads and mark the chunk as not dirty 
-        std::cout << "finished culling invisible quads. set size: " << visibleQuads.size() << std::endl;
-
-        isDirty = false;
     }
 
     void Chunk::fill(const Material& mat) {
+        // fill the chunk with a specific block
         for(size_t x = 0; x < CHUNK_SIZE; x++)
         for(size_t y = 0; y < CHUNK_SIZE; y++)
         for(size_t z = 0; z < CHUNK_SIZE; z++)
             volume[x][y][z].mat = mat;
-    
+        
+        // run findVisible
         findVisible();
     }
 }

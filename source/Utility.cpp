@@ -3,6 +3,10 @@
 #include <iostream>
 
 namespace Utility {
+    void log_message(const std::string& msg) {
+        std::clog << "NOTE: " << msg << std::endl;
+    }
+
     void warn_message(const std::string& msg) {
         std::clog << "WARNING: " << msg << std::endl;
     }
@@ -13,6 +17,13 @@ namespace Utility {
     
     void fatal_error_message(const std::string& msg) {
         std::cerr << "FATAL ERROR: " << msg << std::endl;
+    }
+    
+    bool log(bool condition, const std::string& msg) {
+        if(condition)
+            log_message(msg);
+
+        return condition;
     }
     
     bool warn(bool condition, const std::string& msg) {
