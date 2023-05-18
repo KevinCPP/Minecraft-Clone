@@ -42,6 +42,7 @@ namespace Blocks {
     // test if a material is transparent
     bool isTransparent(const Material& mat);
 
+    // stores necessary data for a block
     struct Block {
         Material mat;
         Geometry::Direction dir;
