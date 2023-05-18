@@ -30,42 +30,7 @@ using namespace Geometry;
 using namespace Blocks;
 using namespace World;
 
-void chunkIter(Chunk* c) {
-    std::cout << "SIZE: " << c->visibleQuads.size() << std::endl;
-    for(auto& p : c->visibleQuads) {
-        if(p.x != 0 && p.y != 0 && p.z != 0 && p.x != World::CHUNK_SIZE - 1 && p.y != World::CHUNK_SIZE - 1 && p.z != World::CHUNK_SIZE - 1) {
-            std::cout << p.x << " " << p.y << " " << p.z;
-            switch(p.face) {
-            case TOP:
-                std:: cout << " TOP";
-                break;
-            case LEFT:
-                std:: cout << " LEFT";
-                break;
-            case BACK:
-                std:: cout << " BACK";
-                break;
-            case RIGHT:
-                std:: cout << " RIGHT";
-                break;
-            case FRONT:
-                std:: cout << " FRONT";
-                break;
-            case BOTTOM:
-                std:: cout << " BOTTOM";
-                break;
-            }
-            std::cout << std::endl;
-        }
-    }
-}
-
 int main() {
-
-#ifdef ENABLE_TESTS
-    testQuads();
-#endif
-    
     // set up game default settings
     Settings::defaultSettings();
 
@@ -102,7 +67,10 @@ int main() {
     
     std::vector<float> vertexData;
     std::vector<unsigned int> indexData;
+    
+#ifdef ENABLE_TESTS
     testChunk(vertexData, indexData);
+#endif
 
     GLCall(glEnable(GL_CULL_FACE));
     GLCall(glCullFace(GL_BACK));

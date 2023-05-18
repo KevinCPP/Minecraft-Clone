@@ -21,6 +21,7 @@ TEST_MAIN = test_app
 all: $(MAIN)
 	@echo  The app has been compiled
 
+test: CXXFLAGS += -DENABLE_TESTS
 test: $(TEST_MAIN)
 	@echo  The test app has been compiled
 
