@@ -24,15 +24,15 @@ namespace World {
         // if no offset coordinates are provided, default to 0, in which case the
         // vertex data for the Quads placed in visibleQuads will just be relative to
         // this specific chunk.
-        chunkX = 0;
-        chunkY = 0;
-        chunkZ = 0;
+//        chunkX = 0;
+//        chunkY = 0;
+//        chunkZ = 0;
     }
     
     // defer to default constructor to initialize the chunk,
     // then set the X Y and Z offsets
     Chunk::Chunk(int16_t X, int16_t Y, int16_t Z) : Chunk() {
-        setOffsetCoordinates(X, Y, Z);
+//        setOffsetCoordinates(X, Y, Z);
     }
 
     // defer to the Chunk(X, Y, Z) constructor to initialize all default
@@ -53,13 +53,11 @@ namespace World {
         return volume[x][y][z].mat;
     }
 
-    void Chunk::setOffsetCoordinates(int16_t X, int16_t Y, int16_t Z) {
-        
-        
-        chunkX = X;
-        chunkY = Y;
-        chunkZ = Z;
-    }
+//    void Chunk::setOffsetCoordinates(int16_t X, int16_t Y, int16_t Z) {
+//        chunkX = X;
+//        chunkY = Y;
+//        chunkZ = Z;
+//    }
 
     // sets a block at a given x, y, and z chunk coordinate. Returns false if
     // x, y, and z are out of bounds, otherwise sets the block and returns true
@@ -103,9 +101,10 @@ namespace World {
 
     void Chunk::removeFacesAt(uint16_t x, uint16_t y, uint16_t z) {
         // get relative coordinates to use for the quad data
-        uint32_t rx = chunkX + x;
-        uint32_t ry = chunkY + y;
-        uint32_t rz = chunkZ + z;
+        // NOTE: removed chunk relative coordinates for now.
+        uint32_t rx = x;
+        uint32_t ry = y;
+        uint32_t rz = z;
         
         // material of the block at x, y ,z
         Blocks::Material cm = volume[x][y][z].mat;
@@ -158,9 +157,9 @@ namespace World {
     }
 
     void Chunk::addFacesAt(uint16_t x, uint16_t y, uint16_t z) {
-        uint32_t rx = chunkX + x;
-        uint32_t ry = chunkY + y;
-        uint32_t rz = chunkZ + z;
+        uint32_t rx = x;
+        uint32_t ry = y;
+        uint32_t rz = z;
     
         Blocks::Material cm = volume[x][y][z].mat;
         

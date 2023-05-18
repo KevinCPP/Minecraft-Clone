@@ -2,9 +2,12 @@
 #define QUAD_H
 
 // project headers
+#include "Utility.h"
 #include "Vertex.h"
 #include "Geometry.h"
 #include "TextureAtlas.h"
+
+#include <vector>
 
 namespace Geometry {
 
@@ -60,6 +63,8 @@ namespace Geometry {
         void addOffset(const glm::vec3& offset);
         void addOffsetAndScale(const glm::vec4& offsetAndScale);
     };
+
+    void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec);
 
     // returns a tuple with an array of floats, and the size of the array
     inline std::tuple<float*, size_t> getFloatArray(Quad* quads, size_t numQuads) {

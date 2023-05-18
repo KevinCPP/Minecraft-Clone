@@ -14,6 +14,7 @@
 #include "../include/Chunk.h"
 #include "../include/Vertex.h"
 #include "../include/Camera.h"
+#include "../include/Region.h"
 #include "../include/Texture.h"
 #include "../include/Settings.h"
 #include "../include/Renderer.h"
@@ -98,87 +99,32 @@ int main() {
 
     // print the OpenGL version
     std::cout << glGetString(GL_VERSION) << std::endl;
-
-    Chunk chunk;
     
-    FastNoiseLite noise;
-    noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-
-    int maxLayers;
-    glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
-    std::cout << "maxLayers: " << maxLayers << std::endl;
-
-    // gather noise data
-    float noiseData[16][16];
-    for(size_t x = 0; x < 16; x++) {
-        for(size_t y = 0; y < 16; y++) {
-            noiseData[x][y] = noise.GetNoise((float)x, (float)y);
-        }
-    }
-
-    for(size_t x = 0; x < 16; x++) {
-        for(size_t z = 0; z < 16; z++) {
-            for(size_t y = 0; y < noiseData[x][z] * 16; y++) {
-                if((y + 1) >= noiseData[x][z] * 16)
-                    chunk.setBlock(x, y, z, Blocks::Block(Blocks::GRASS_BLOCK));
-                else if((y + 3) >= noiseData[x][z] * 16)
-                    chunk.setBlock(x, y, z, Blocks::Block(Blocks::DIRT));
-                else
-                    chunk.setBlock(x, y, z, Blocks::Block(Blocks::STONE));
-
-            }
-        }
-    }
+    std::vector<float> vertexData;
+    std::vector<unsigned int> indexData;
+    testChunk(vertexData, indexData);
 
     GLCall(glEnable(GL_CULL_FACE));
     GLCall(glCullFace(GL_BACK));
-
-    std::vector<Quad> temp;
-    std::vector<unsigned int> indices;
-    size_t counter = 0;
-    bool counting = false;
-    for(auto& p : chunk.visibleQuads) {
-        bool err = p.x == 0 && p.y == 0 && p.z == 0 && p.face == Geometry::LEFT;
-        for(auto i : Quad::indices) {
-            if(err) std::cout << "indices " << (temp.size() * 4) + i << " ";
-            indices.push_back((temp.size() * 4) + i);
-        }
-
-        Blocks::Material mat = chunk.getBlockMaterial(p.x, p.y, p.z);
-        Geometry::Cube thisCube = CubeFactory::getInstance().makeMaterialCube(mat).value();
-        thisCube.setPosition(p.x, p.y, p.z);
-        thisCube.setNormalizedDeviceCoordinates(16.0f);
-        Quad q = thisCube.copyQuad((Geometry::Direction)p.face);
-        temp.push_back(q);
-    }
-    
-    std::cout << std::endl;
-    std::cout << "COUNTER: " << counter << std::endl;
-    std::cout << "SIZES: " << temp.size() << " " << indices.size() << std::endl;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBlendEquation(GL_FUNC_ADD);
 
-    std::cout << chunk.visibleQuads.size() << std::endl;
-
     VertexArray va;
-    VertexBuffer vb((float*)temp.data(), temp.size() * FLOATS_PER_QUAD * sizeof(float));
-
+    VertexBuffer vb(vertexData.data(), vertexData.size() * sizeof(float));
+    
     VertexBufferLayout layout;
     layout.push_float(3);
     layout.push_float(3);
     va.addBuffer(vb, layout);
 
-    IndexBuffer ib(indices.data(), indices.size()); 
+    IndexBuffer ib(indexData.data(), indexData.size()); 
 
     Shader shader("resources/shaders/basic_array.shader");
     shader.bind();
 
     Renderer renderer;
-
-    //Texture texture("resources/textures/atlas.bmp");
-    //texture.bind(0); 
 
     shader.setUniform1i("uTexture", 0);
 

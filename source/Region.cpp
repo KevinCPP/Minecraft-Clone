@@ -1,9 +1,12 @@
 #include "../include/Region.h"
+#include "../include/CubeFactory.h"
 
 namespace World {
 
     Region::Region() : rd(Settings::renderDistance * 2) {
         loadedChunks = new Chunk**[rd];
+        
+        std::cout << "going to allocate: " << sizeof(Chunk) * rd * rd * rd << " bytes." << std::endl;
 
         for(size_t i = 0; i < rd; ++i) {
             loadedChunks[i] = new Chunk*[rd];
@@ -11,6 +14,7 @@ namespace World {
                 loadedChunks[i][j] = new Chunk[rd];
             }
         }
+
     }
 
     Region::~Region() { 
@@ -23,3 +27,6 @@ namespace World {
         delete[] loadedChunks;
     }
 }
+
+
+

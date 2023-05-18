@@ -34,6 +34,6 @@ namespace Settings {
         useAnisotropicFiltering = true;
         anisotropicLevels = 2.0f;
 
-        renderDistance = 2;
+        renderDistance = 16;
     }
 }

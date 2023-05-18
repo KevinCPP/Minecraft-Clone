@@ -2,7 +2,7 @@
 CXX = g++
 
 # define any compile-time flags
-CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic -Iinclude
+CXXFLAGS = -g -std=c++20 -Wall -Wextra -pedantic -Iinclude
 
 # define any libraries to link into executable
 LIBS = -lGLEW -lglfw -lGL

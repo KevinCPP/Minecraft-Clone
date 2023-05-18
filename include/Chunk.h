@@ -61,7 +61,7 @@ namespace World {
         
         // stores the offsets of the chunk which will be used when performing findVisible()
         // to offset the positions of the cubes. Should be relative to the rendered space 
-        int16_t chunkX, chunkY, chunkZ;
+//        int16_t chunkX, chunkY, chunkZ;
 
         void addFacesAt(uint16_t x, uint16_t y, uint16_t z);
         void removeFacesAt(uint16_t x, uint16_t y, uint16_t z);

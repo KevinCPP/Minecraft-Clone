@@ -122,6 +122,16 @@ namespace Geometry {
         }
     }
 
+    void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec) {
+        Utility::warn(!vec.empty(), "vector was not empty!");
+
+        for(size_t i = 0; i < numQuads; i++) {
+            for(size_t j = 0; j < Quad::indices.size(); j++) {
+                vec.push_back((i * Geometry::VERTICES_PER_QUAD) + Quad::indices[j]);
+            }
+        }
+    }
+
 }
 
 
