@@ -31,9 +31,10 @@ int TextureArray::getIndex(const std::string& fileName) const {
         return it->second;
 
     it = indices.find(Settings::TEXTURE_DIRECTORY + fileName);
-    if(it != indices.end())
+    if(it != indices.end()) {
+        std::cout << "file found: " << it->first << " array index: " << it->second << std::endl;
         return it->second;
-
+    }
     std::cout << "FAILED TO GET: " << fileName << std::endl;
     std::cout << "List of available textures: " << std::endl;
 

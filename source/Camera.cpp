@@ -91,7 +91,7 @@ void Camera::processKeyboardInput(Direction direction, float deltaTime) {
     }
 
 
-    std::cout << "POS: " << position.x << " " << position.y << " " << position.z << std::endl;
+//    std::cout << "POS: " << position.x << " " << position.y << " " << position.z << std::endl;
 }
 
 void Camera::processMouseMovement(float xOffset, float yOffset) {

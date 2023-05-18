@@ -7,6 +7,8 @@
 #include <iostream>
 #include <cstdio>
 
+#include "../vendor/fastnoiselite.h"
+
 #include "../include/Cube.h"
 #include "../include/Quad.h"
 #include "../include/Chunk.h"
@@ -86,7 +88,7 @@ int main() {
     glfwMakeContextCurrent(window);
 
     // draw 1 frame before swapping front and back frame buffer
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
 
     // ensure that glew initialized successfully
     if(glewInit() != GLEW_OK) {
@@ -98,11 +100,35 @@ int main() {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     Chunk chunk;
-    chunk.fill(Blocks::STONE);
-    chunk.removeBlock(5, 5, 5);
-    chunk.removeBlock(5, 6, 5);
-    chunk.removeBlock(6, 7, 5);
-    chunk.setBlock(5, 6, 5, Blocks::Block(Blocks::STONE));
+    
+    FastNoiseLite noise;
+    noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+
+    int maxLayers;
+    glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
+    std::cout << "maxLayers: " << maxLayers << std::endl;
+
+    // gather noise data
+    float noiseData[16][16];
+    for(size_t x = 0; x < 16; x++) {
+        for(size_t y = 0; y < 16; y++) {
+            noiseData[x][y] = noise.GetNoise((float)x, (float)y);
+        }
+    }
+
+    for(size_t x = 0; x < 16; x++) {
+        for(size_t z = 0; z < 16; z++) {
+            for(size_t y = 0; y < noiseData[x][z] * 16; y++) {
+                if((y + 1) >= noiseData[x][z] * 16)
+                    chunk.setBlock(x, y, z, Blocks::Block(Blocks::GRASS_BLOCK));
+                else if((y + 3) >= noiseData[x][z] * 16)
+                    chunk.setBlock(x, y, z, Blocks::Block(Blocks::DIRT));
+                else
+                    chunk.setBlock(x, y, z, Blocks::Block(Blocks::STONE));
+
+            }
+        }
+    }
 
     GLCall(glEnable(GL_CULL_FACE));
     GLCall(glCullFace(GL_BACK));
@@ -124,7 +150,6 @@ int main() {
         thisCube.setNormalizedDeviceCoordinates(16.0f);
         Quad q = thisCube.copyQuad((Geometry::Direction)p.face);
         temp.push_back(q);
-
     }
     
     std::cout << std::endl;
@@ -170,13 +195,18 @@ int main() {
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
+    float lastPrint = 0.0f;
     while(!glfwWindowShouldClose(window)) {
         renderer.clear();
         glClearColor(0.35f, 0.8f, 0.95f, 1.0f);
         
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
-//        std::cout << 1.0f / deltaTime << '\n';
+        lastPrint += deltaTime;
+        if(lastPrint >= 2.0f) {
+            lastPrint = 0.0f;
+            std::cout << 1.0f / deltaTime << '\n';
+        }
         lastFrame = currentFrame;
         
 
