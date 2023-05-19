@@ -30,15 +30,10 @@ namespace Geometry {
 
         // creates a cube where the offsets are added to the position data in the vertices
         Cube(float offsetX, float offsetY, float offsetZ);
-
-        // creates a cube where the offsets are added to the position data in the vertices,
-        // AND multiplied by the scale in the end.
-        Cube(float offsetX, float offsetY, float offsetZ, float scale);
         
         // Does the same thing as the previous two constructors
         // but accepts glm vectors as arguments rather than just floats
         Cube(const glm::vec3& offset);
-        Cube(const glm::vec4& offsetAndScale);
 
         // accepts an array of quads so a cube can be made manually by the user
         Cube(std::array<Quad, 6> quadArr);
@@ -47,48 +42,33 @@ namespace Geometry {
         bool operator!=(const Cube& other) const;
 
         // resets the cube to default cube
-        void Reset();
+        void reset();
 
         // resets the cube position vertices to default
-        void ResetPosition();
+        void resetPosition();
 
         // sets the scale of the cube
-        void setScale(float scale);
+        void setScale(const glm::vec3& scale);
 
         // calculates the scale of the cube
-        float getScale();
+        glm::vec3 getScale();
+
+        // returns the height of the cube (y scale / x scale)
+        float getHeight();
+
+        // sets the height of the cube
+        void setHeight(float height);
 
         // adds X Y and Z to the vertices positions
         void addOffset(float X, float Y, float Z);
         void addOffset(const glm::vec3& offset);
 
-        // adds X Y and Z to the vertices positions, and scales it about the cube's center
-        void addOffsetAndScale(float X, float Y, float Z, float scale);
-        void addOffsetAndScale(const glm::vec4& offsetAndScale);
-
         // sets the position of the cube
         void setPosition(float X, float Y, float Z);
         void setPosition(const glm::vec3& position);
-        
-        // sets the position AND scale of the cube
-        void setPositionAndScale(float X, float Y, float Z, float scale);
-        void setPositionAndScale(const glm::vec4& positionAndScale);
-
-        // sets the cube to normalized device coordinates relative to the maxDist
-        void setNormalizedDeviceCoordinates(float maxDist);
 
         // returns the center coordinate of the cube
         glm::vec3 getCenter();
-
-        // converts a cube into an array of floats (raw vertex data)
-        std::tuple<float*, size_t> floats(); 
-    
-        // set bottom corner position rather than setting position by the center
-        void setBottomCornerPosition(float X, float Y, float Z);
-        void setBottomCornerPosition(const glm::vec3& position);
-
-        // returns the bottom corner position
-        glm::vec3 getBottomCornerPosition();
 
         // sets the texture coordinates for every cube face
         void setAllTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
@@ -106,7 +86,6 @@ namespace Geometry {
         
         // sets the texture coords for both the top and bottom
         void setTopBottomTextureCoords(TextureAtlas* a, uint32_t x, uint32_t y, uint32_t width, uint32_t height);
-
 
         void setTopTextureArrayIndex(float index);
         void setBackTextureArrayIndex(float index);

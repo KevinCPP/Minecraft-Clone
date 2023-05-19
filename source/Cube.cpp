@@ -5,7 +5,7 @@ namespace Geometry {
     namespace {
         const Vertex DEFAULT_VERTICES[VERTICES_PER_CUBE] = {
             // front
-            Vertex(-0.5f,  0.5f, -0.5f, 1, 1, 0),
+            Vertex(-0.5f,  0.5f, -0.5f, 1, 1, 0), 
             Vertex( 0.5f,  0.5f, -0.5f, 0, 1, 0),
             Vertex( 0.5f, -0.5f, -0.5f, 0, 0, 0),
             Vertex(-0.5f, -0.5f, -0.5f, 1, 0, 0),
@@ -15,7 +15,7 @@ namespace Geometry {
             Vertex( 0.5f,  0.5f, -0.5f, 1, 1, 0), // bottom right
             Vertex( 0.5f,  0.5f,  0.5f, 0, 1, 0), // top right
             Vertex( 0.5f, -0.5f,  0.5f, 0, 0, 0), // top left
-            
+             
             // back
             Vertex(-0.5f, -0.5f,  0.5f, 0, 0, 0),
             Vertex( 0.5f, -0.5f,  0.5f, 1, 0, 0),
@@ -52,7 +52,7 @@ namespace Geometry {
     }
 
     Cube::Cube() {
-        Reset();
+        reset();
     }
 
     Cube::Cube(const Cube& other) {
@@ -71,18 +71,10 @@ namespace Geometry {
         setPosition(X, Y, Z); 
     }
 
-    Cube::Cube(float X, float Y, float Z, float scale) {
-        setPositionAndScale(X, Y, Z, scale);
-    }
-
     Cube::Cube(const glm::vec3& position) {
         setPosition(position);
     }
 
-    Cube::Cube(const glm::vec4& positionAndScale) {
-        setPositionAndScale(positionAndScale);
-    }
- 
     Cube::Cube(std::array<Quad, 6> quadArr) {
         assert(QUADS_PER_CUBE == 6 && "QUADS_PER_CUBE != 6");
         memcpy(quads, quadArr.data(), QUADS_PER_CUBE * sizeof(Quad));
@@ -103,16 +95,14 @@ namespace Geometry {
         return true;
     }
     
-
-
     // resets the entire cube to default
-    void Cube::Reset() {
+    void Cube::reset() {
         assert((sizeof(DEFAULT_QUADS) == sizeof(quads)) && "DEFAULT_QUADS size doesn't match quads size!");
         memcpy(quads, DEFAULT_QUADS, QUADS_PER_CUBE * sizeof(Quad));
     }
 
     // resets the positions to defaults
-    void Cube::ResetPosition() {
+    void Cube::resetPosition() {
         for(size_t q = 0; q < QUADS_PER_CUBE; q++) {
             for(size_t v = 0; v < VERTICES_PER_QUAD; v++) {
                 size_t currentVertex = (q * VERTICES_PER_QUAD) + v;
@@ -124,16 +114,13 @@ namespace Geometry {
     }
 
     // scales cube about the origin (center) of the cube
-    void Cube::setScale(float scale) {
-        glm::vec3 center = getCenter();
+    void Cube::setScale(const glm::vec3& scale) {
+        glm::vec3 currentScale = getScale();
+        glm::vec3 scaleRatio = scale / currentScale;
 
         for(auto& q : quads) {
             for(auto& v : q.vertices) {
-                glm::vec3 pos = v.getPosition();
-                pos -= center;
-                pos *= scale;
-                pos += center;
-                v.setPosition(pos);
+                v.setPosition(v.getPosition() * scaleRatio);
             }
         }
     }
@@ -141,11 +128,40 @@ namespace Geometry {
     // returns the scale of the cube (default is 1.0). Since it is scaled
     // by a factor of a single number, we can simply return the distance
     // between any two adjacent points.
-    float Cube::getScale() {
+    glm::vec3 Cube::getScale() {
+        // quad 0 is the front quad, vertex 0 is the bottom left and vertex 1
+        // is the bottom right, so the distance will be the scale on the x-axis
         glm::vec3 position1 = quads[0].vertices[0].getPosition();
         glm::vec3 position2 = quads[0].vertices[1].getPosition();
+        float xScale = glm::distance(position1, position2);
+        
+        // quad 1 is the right side, so it will get the z-scale
+        position1 = quads[1].vertices[0].getPosition();
+        position2 = quads[1].vertices[1].getPosition();
+        float zScale = glm::distance(position1, position2);
+        
+        // for the y scale, we can just use vertex 0 again, but this time,
+        // use 0 for the bottom right and 3 for the top right vertex to get height
+        position1 = quads[0].vertices[0].getPosition();
+        position2 = quads[0].vertices[3].getPosition();
+        float yScale = glm::distance(position1, position2);
+        
+        // finally, return the scale.
+        return glm::vec3(xScale, yScale, zScale);
+    }
 
-        return glm::distance(position1, position2);
+    float Cube::getHeight() {
+        glm::vec3 scale = getScale();
+        return scale.y / scale.x;
+    }
+
+    void Cube::setHeight(float height) {
+        Quad* back = getQuad(Geometry::BACK); 
+        Quad* left = getQuad(Geometry::LEFT);
+        Quad* front = getQuad(Geometry::FRONT);
+        Quad* right = getQuad(Geometry::RIGHT);
+        
+          
     }
 
     // adds X Y and Z to the position of the cube
@@ -159,55 +175,21 @@ namespace Geometry {
                 v.setPosition(v.getPosition() + offset);
     }
 
-    // adds X Y and Z to the position of the cube, then scales
-    void Cube::addOffsetAndScale(float X, float Y, float Z, float scale) {
-        addOffsetAndScale(glm::vec4(X, Y, Z, scale));
-    }
-
-    void Cube::addOffsetAndScale(const glm::vec4& offsetAndScale) {
-        addOffset(glm::vec3(offsetAndScale));
-        setScale(offsetAndScale.w);
-    }
-
     void Cube::setPosition(float X, float Y, float Z) {
         // get the scale
-        float scale = getScale();
+        glm::vec3 scale = getScale();
         
         // reset the cube, so that just adding an offset
         // will essentially be setting the position
-        ResetPosition();
+        resetPosition();
 
         // add that offset, and re-scale it
-        addOffsetAndScale(X, Y, Z, scale);
-    }
-
-    void Cube::setPosition(const glm::vec3& position) {
-        // get the scale
-        float scale = getScale();
-
-        // reset the cube to the origin
-        ResetPosition();
-
-        // add offset and scale to it
-        addOffsetAndScale(glm::vec4(position, scale));
-    }
-
-    void Cube::setPositionAndScale(float X, float Y, float Z, float scale) {
-        ResetPosition();
         addOffset(X, Y, Z);
         setScale(scale);
     }
 
-    void Cube::setPositionAndScale(const glm::vec4& positionAndScale) {
-        ResetPosition();
-        addOffset(glm::vec3(positionAndScale));
-        setScale(positionAndScale.w);
-    }
-
-    void Cube::setNormalizedDeviceCoordinates(float maxDist) {
-        float newScale = getScale() / (2.0f * maxDist);
-        glm::vec3 newPos = getCenter() / maxDist;
-        setPositionAndScale(glm::vec4(newPos, newScale));
+    void Cube::setPosition(const glm::vec3& position) {
+        setPosition(position.x, position.y, position.z);
     }
 
     // returns the center point of the cube
@@ -224,10 +206,6 @@ namespace Geometry {
         center /= (QUADS_PER_CUBE * VERTICES_PER_QUAD);
 
         return center;
-    }
-
-    std::tuple<float*, size_t> Cube::floats() {
-        return std::make_tuple((float*)quads, FLOATS_PER_CUBE);
     }
 
     // sets the texture coordinates for every cube face
@@ -275,29 +253,12 @@ namespace Geometry {
         setBottomTextureCoords(a, x, y, width, height);
     }
 
-    void Cube::setTopTextureArrayIndex(float index) {
-        quads[5].setTextureArrayIndex(index);
-    }
-    
-    void Cube::setBackTextureArrayIndex(float index) {
-        quads[2].setTextureArrayIndex(index);
-    }
-   
-    void Cube::setLeftTextureArrayIndex(float index) {
-        quads[3].setTextureArrayIndex(index);
-    }
-
-    void Cube::setRightTextureArrayIndex(float index) {
-        quads[1].setTextureArrayIndex(index);
-    }
-
-    void Cube::setFrontTextureArrayIndex(float index) {
-        quads[0].setTextureArrayIndex(index);
-    }
-
-    void Cube::setBottomTextureArrayIndex(float index) {
-        quads[4].setTextureArrayIndex(index);
-    }
+    void Cube::setTopTextureArrayIndex(float index) { quads[5].setTextureArrayIndex(index); }
+    void Cube::setBackTextureArrayIndex(float index) { quads[2].setTextureArrayIndex(index); }
+    void Cube::setLeftTextureArrayIndex(float index) { quads[3].setTextureArrayIndex(index); }
+    void Cube::setRightTextureArrayIndex(float index) {quads[1].setTextureArrayIndex(index); }
+    void Cube::setFrontTextureArrayIndex(float index) { quads[0].setTextureArrayIndex(index); }
+    void Cube::setBottomTextureArrayIndex(float index) { quads[4].setTextureArrayIndex(index); }
 
     void Cube::setAllTextureArrayIndex(float index) {
         setSidesTextureArrayIndex(index);
@@ -332,7 +293,6 @@ namespace Geometry {
                 return quads + 4;
         }
     }
-
 
     Quad Cube::copyQuad(Geometry::Direction dir) const {
         switch(dir) {

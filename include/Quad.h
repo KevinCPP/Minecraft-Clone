@@ -51,17 +51,15 @@ namespace Geometry {
         
         // add an offset to the quad
         void addOffset(float X, float Y, float Z);
+        void addOffset(const glm::vec3& offset);
+        
+        // returns the scale in the x/y direction
+        void setScale(const glm::vec2& xyscale);
 
-        // add an offset to the quad, then scale it
-        void addOffsetAndScale(float X, float Y, float Z, float scale);
+        void setHeight(float height);
 
         bool operator==(const Quad& other) const;
         bool operator!=(const Quad& other) const;
-
-        void setNormalizedDeviceCoordinates(float scale);
-
-        void addOffset(const glm::vec3& offset);
-        void addOffsetAndScale(const glm::vec4& offsetAndScale);
     };
 
     void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec);

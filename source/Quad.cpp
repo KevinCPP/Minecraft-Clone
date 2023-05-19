@@ -106,21 +106,17 @@ namespace Geometry {
         addOffset(glm::vec3(X, Y, Z)); 
     }
 
-    void Quad::addOffsetAndScale(float X, float Y, float Z, float scale) {
-        addOffsetAndScale(glm::vec4(X, Y, Z, scale));
-    }
-
     void Quad::addOffset(const glm::vec3& offset) {
         for(auto& v : vertices) {
             v.setPosition(v.getPosition() + offset);
         }
     }
 
-    void Quad::addOffsetAndScale(const glm::vec4& offsetAndScale) {
-        for(auto& v : vertices) {
-            v.setPosition((v.getPosition() + glm::vec3(offsetAndScale)) * offsetAndScale.w);
-        }
+    void setScale(const glm::vec3& scale) {
+        glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scaleFactors);
+        quad.transform(scaleMatrix);
     }
+
 
     void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec) {
         Utility::warn(!vec.empty(), "vector was not empty!");
