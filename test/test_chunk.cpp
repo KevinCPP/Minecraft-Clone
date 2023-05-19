@@ -61,17 +61,17 @@ void testChunk(std::vector<float>& vertexSrc, std::vector<unsigned int>& indexSr
     
     size_t numQuads = 0;
     // iterate through the set of data for all visible quads in the chunk
-    for(auto& vqd : c.visibleQuads) {
+    for(auto vqd = c.visibleQuadsBegin(); vqd != c.visibleQuadsEnd(); vqd++) {
         // get the block for this visible quad
-        Blocks::Material mat = c.getBlockMaterial(vqd.x, vqd.y, vqd.z);
+        Blocks::Material mat = c.getBlockMaterial(vqd->x, vqd->y, vqd->z);
         // create a cube from that material
         Geometry::Cube thisCube = *Blocks::CubeFactory::getInstance().makeMaterialCube(mat);
         // set the cube to the correct location in world space
-        thisCube.setPosition(offsetX + vqd.x, vqd.y, offsetZ + vqd.z);
+        thisCube.setPosition(offsetX + vqd->x, vqd->y, offsetZ + vqd->z);
         // translate to normalized device coordinates
-        thisCube.setNormalizedDeviceCoordinates(World::CHUNK_SIZE);
+//        thisCube.setNormalizedDeviceCoordinates(World::CHUNK_SIZE);
         // get the quad that is actually visible on this cube
-        Geometry::Quad visibleQuad = thisCube.copyQuad((Geometry::Direction)vqd.face);
+        Geometry::Quad visibleQuad = thisCube.copyQuad((Geometry::Direction)vqd->face);
         
         // before inserting it into the vertexData vector, go ahead and place it's indices in the indexData vector
         std::cout << std::endl;

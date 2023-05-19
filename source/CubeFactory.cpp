@@ -11,12 +11,12 @@ namespace Blocks {
          
         cubes[STONE]      .setAllTextureArrayIndex(       (float)texArray->getIndex("stone.bmp"               ));
         
-        cubes[DEV]        .setTopTextureArrayIndex(       (float)texArray->getIndex("test_top.bmp"            ));
-        cubes[DEV]        .setLeftTextureArrayIndex(      (float)texArray->getIndex("test_left.bmp"           ));
-        cubes[DEV]        .setBackTextureArrayIndex(      (float)texArray->getIndex("test_back.bmp"           ));
-        cubes[DEV]        .setFrontTextureArrayIndex(     (float)texArray->getIndex("test_front.bmp"          ));
-        cubes[DEV]        .setRightTextureArrayIndex(     (float)texArray->getIndex("test_right.bmp"          ));
-        cubes[DEV]        .setBottomTextureArrayIndex(    (float)texArray->getIndex("test_bottom.bmp"         ));
+//        cubes[DEV]        .setTopTextureArrayIndex(       (float)texArray->getIndex("test_top.bmp"            ));
+//        cubes[DEV]        .setLeftTextureArrayIndex(      (float)texArray->getIndex("test_left.bmp"           ));
+//        cubes[DEV]        .setBackTextureArrayIndex(      (float)texArray->getIndex("test_back.bmp"           ));
+//        cubes[DEV]        .setFrontTextureArrayIndex(     (float)texArray->getIndex("test_front.bmp"          ));
+//        cubes[DEV]        .setRightTextureArrayIndex(     (float)texArray->getIndex("test_right.bmp"          ));
+//        cubes[DEV]        .setBottomTextureArrayIndex(    (float)texArray->getIndex("test_bottom.bmp"         ));
 
         cubes[COBBLESTONE].setAllTextureArrayIndex(       (float)texArray->getIndex("cobblestone.bmp"         ));
         cubes[DIRT]       .setAllTextureArrayIndex(       (float)texArray->getIndex("dirt.bmp"                ));

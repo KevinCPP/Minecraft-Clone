@@ -5,40 +5,40 @@ namespace Geometry {
     namespace {
         const Vertex DEFAULT_VERTICES[VERTICES_PER_CUBE] = {
             // front
-            Vertex(-1.0f,  1.0f, -1.0f, 1, 1, 0),
-            Vertex( 1.0f,  1.0f, -1.0f, 0, 1, 0),
-            Vertex( 1.0f, -1.0f, -1.0f, 0, 0, 0),
-            Vertex(-1.0f, -1.0f, -1.0f, 1, 0, 0),
+            Vertex(-0.5f,  0.5f, -0.5f, 1, 1, 0),
+            Vertex( 0.5f,  0.5f, -0.5f, 0, 1, 0),
+            Vertex( 0.5f, -0.5f, -0.5f, 0, 0, 0),
+            Vertex(-0.5f, -0.5f, -0.5f, 1, 0, 0),
 
             // right side
-            Vertex( 1.0f, -1.0f, -1.0f, 1, 0, 0), // bottom left
-            Vertex( 1.0f,  1.0f, -1.0f, 1, 1, 0), // bottom right
-            Vertex( 1.0f,  1.0f,  1.0f, 0, 1, 0), // top right
-            Vertex( 1.0f, -1.0f,  1.0f, 0, 0, 0), // top left
+            Vertex( 0.5f, -0.5f, -0.5f, 1, 0, 0), // bottom left
+            Vertex( 0.5f,  0.5f, -0.5f, 1, 1, 0), // bottom right
+            Vertex( 0.5f,  0.5f,  0.5f, 0, 1, 0), // top right
+            Vertex( 0.5f, -0.5f,  0.5f, 0, 0, 0), // top left
             
             // back
-            Vertex(-1.0f, -1.0f,  1.0f, 0, 0, 0),
-            Vertex( 1.0f, -1.0f,  1.0f, 1, 0, 0),
-            Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
-            Vertex(-1.0f,  1.0f,  1.0f, 0, 1, 0),
+            Vertex(-0.5f, -0.5f,  0.5f, 0, 0, 0),
+            Vertex( 0.5f, -0.5f,  0.5f, 1, 0, 0),
+            Vertex( 0.5f,  0.5f,  0.5f, 1, 1, 0),
+            Vertex(-0.5f,  0.5f,  0.5f, 0, 1, 0),
             
             // left side
-            Vertex(-1.0f, -1.0f,  1.0f, 1, 0, 0),
-            Vertex(-1.0f,  1.0f,  1.0f, 1, 1, 0),
-            Vertex(-1.0f,  1.0f, -1.0f, 0, 1, 0),
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 0, 0),
+            Vertex(-0.5f, -0.5f,  0.5f, 1, 0, 0),
+            Vertex(-0.5f,  0.5f,  0.5f, 1, 1, 0),
+            Vertex(-0.5f,  0.5f, -0.5f, 0, 1, 0),
+            Vertex(-0.5f, -0.5f, -0.5f, 0, 0, 0),
             
             // bottom
-            Vertex(-1.0f, -1.0f, -1.0f, 0, 0, 0),
-            Vertex( 1.0f, -1.0f, -1.0f, 1, 0, 0),
-            Vertex( 1.0f, -1.0f,  1.0f, 1, 1, 0),
-            Vertex(-1.0f, -1.0f,  1.0f, 0, 1, 0),
+            Vertex(-0.5f, -0.5f, -0.5f, 0, 0, 0),
+            Vertex( 0.5f, -0.5f, -0.5f, 1, 0, 0),
+            Vertex( 0.5f, -0.5f,  0.5f, 1, 1, 0),
+            Vertex(-0.5f, -0.5f,  0.5f, 0, 1, 0),
             
             // top
-            Vertex(-1.0f,  1.0f,  1.0f, 0, 1, 0),
-            Vertex( 1.0f,  1.0f,  1.0f, 1, 1, 0),
-            Vertex( 1.0f,  1.0f, -1.0f, 1, 0, 0),
-            Vertex(-1.0f,  1.0f, -1.0f, 0, 0, 0),
+            Vertex(-0.5f,  0.5f,  0.5f, 0, 1, 0),
+            Vertex( 0.5f,  0.5f,  0.5f, 1, 1, 0),
+            Vertex( 0.5f,  0.5f, -0.5f, 1, 0, 0),
+            Vertex(-0.5f,  0.5f, -0.5f, 0, 0, 0),
         };
 
         const Quad DEFAULT_QUADS[QUADS_PER_CUBE] = {
@@ -145,7 +145,7 @@ namespace Geometry {
         glm::vec3 position1 = quads[0].vertices[0].getPosition();
         glm::vec3 position2 = quads[0].vertices[1].getPosition();
 
-        return glm::distance(position1, position2) / 2.0f;
+        return glm::distance(position1, position2);
     }
 
     // adds X Y and Z to the position of the cube
