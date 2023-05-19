@@ -41,7 +41,8 @@ namespace Geometry {
 
         // getters (floats)
         float getTextureArrayIndex();
-
+        
+        // operator overloads
         bool operator==(const Vertex& other) const;
         bool operator!=(const Vertex& other) const;
 
