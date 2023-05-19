@@ -51,9 +51,5 @@ namespace Geometry {
         glm::vec3 getTextureArrayCoords() const;
         glm::vec3 getNormal() const;
     }; 
-
-    inline std::tuple<float*, size_t> getFloatArray(Vertex* vertices, const size_t numVertices) {
-        return std::make_tuple((float*)vertices, numVertices * FLOATS_PER_VERTEX);
-    }
 }
 #endif

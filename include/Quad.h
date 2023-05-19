@@ -65,10 +65,5 @@ namespace Geometry {
     };
 
     void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec);
-
-    // returns a tuple with an array of floats, and the size of the array
-    inline std::tuple<float*, size_t> getFloatArray(Quad* quads, size_t numQuads) {
-        return std::make_tuple((float*)quads, numQuads * FLOATS_PER_QUAD);
-    }
 }
 #endif

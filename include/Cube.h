@@ -122,23 +122,6 @@ namespace Geometry {
         Quad* getQuad(Geometry::Direction dir);
         Quad copyQuad(Geometry::Direction dir) const;
     };
-
-    // converts an array of cubes into an array of floats 
-    inline std::tuple<float*, size_t> getFloatArray(Cube* cubes, size_t numCubes) {
-        return std::make_tuple((float*)cubes, numCubes * FLOATS_PER_CUBE);
-    }
-
-    inline std::tuple<unsigned int*, size_t> getIndicesArray(size_t numCubes) {
-        unsigned int* indexBuff = (unsigned int*)malloc(numCubes * 36 * sizeof(unsigned int));
-        for(size_t i = 0; i < numCubes; i++) {
-            for(size_t j = 0; j < 36; j++) {
-                size_t c = j + (i * 36);
-                indexBuff[c] = (24 * i) + Cube::indices[j];
-            }
-        }
-
-        return std::make_tuple(indexBuff, numCubes * 36);
-    }
 }
 
 #endif 
