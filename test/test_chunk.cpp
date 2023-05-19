@@ -65,11 +65,8 @@ void testChunk(std::vector<float>& vertexSrc, std::vector<unsigned int>& indexSr
         // get the block for this visible quad
         Blocks::Material mat = c.getBlockMaterial(vqd->x, vqd->y, vqd->z);
         // create a cube from that material
-        Geometry::Cube thisCube = *Blocks::CubeFactory::getInstance().makeMaterialCube(mat);
-        // set the cube to the correct location in world space
-        thisCube.setPosition(offsetX + vqd->x, vqd->y, offsetZ + vqd->z);
-        // translate to normalized device coordinates
-//        thisCube.setNormalizedDeviceCoordinates(World::CHUNK_SIZE);
+        Geometry::Cube thisCube = *Blocks::Block(mat).getCube(offsetX + vqd->x, vqd->y, offsetZ + vqd->z);
+        
         // get the quad that is actually visible on this cube
         Geometry::Quad visibleQuad = thisCube.copyQuad((Geometry::Direction)vqd->face);
         

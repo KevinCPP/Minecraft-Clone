@@ -10,7 +10,7 @@ namespace Blocks {
     // list of every material in the game
     enum Material : uint8_t {
         STONE = 0,
-//        DEV,
+        DEV,
         COBBLESTONE,
         DIRT,
         GRASS_BLOCK,
