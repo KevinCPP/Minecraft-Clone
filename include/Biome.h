@@ -10,6 +10,8 @@ namespace World {
         int minHeight, maxHeight;
         FastNoiseLite noiseGenerator;
 
+        Biome();
+
         // returns true if the temp is between minTemp and maxTemp
         bool isTempRange(float temp);
 

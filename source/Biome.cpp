@@ -1,6 +1,12 @@
 #include "../include/Biome.h"
 
 namespace World {
+
+    Biome::Biome() {
+        minHeight = 48;
+        maxHeight = 96;
+    }
+    
     bool Biome::isTempRange(float temp) {
         return minTemp <= temp && temp <= maxTemp;
     }
