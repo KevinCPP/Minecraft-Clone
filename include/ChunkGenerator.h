@@ -2,7 +2,7 @@
 #define CHUNKGENERATOR_H
 
 class ChunkGenerator {
-        
+
 };
 
 

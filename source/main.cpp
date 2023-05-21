@@ -101,12 +101,14 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(1.0f / 16.0f));
     glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)Settings::ResolutionX / (float)Settings::ResolutionY, 0.001f, 100.0f);
-    glm::mat4 mvp = projection * view * model;
 
-    glScalef(1/16.0f, 1/16.0f, 1/16.0f);
+    shader.setUniformMat4f("uModelMatrix", model);
+    shader.setUniformMat4f("uViewMatrix", view); 
+    shader.setUniformMat4f("uProjectionMatrix", projection);
+    shader.setUniform1f("uScaleFactor", 16.0f);
+
     Camera cam;
     cam.setSensitivity(60.0f);
     cam.setMovementSpeed(0.2f);
@@ -126,7 +128,6 @@ int main() {
             std::cout << 1.0f / deltaTime << '\n';
         }
         lastFrame = currentFrame;
-        
 
         if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             cam.processKeyboardInput(Camera::Direction::FRONT, deltaTime);
@@ -149,11 +150,9 @@ int main() {
             cam.processMouseMovement(0, -deltaTime);
         if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
             cam.processMouseMovement(-deltaTime, 0);
-
-        // update MVP matrix
-        mvp = projection * cam.getViewMatrix() * model;
-        shader.setUniformMat4f("uMVPMatrix", mvp);
-
+        
+        // update mvp matrix
+        shader.setUniformMat4f("uViewMatrix", cam.getViewMatrix()); 
 
         renderer.draw(va, ib, shader);
 

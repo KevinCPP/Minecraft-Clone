@@ -43,7 +43,7 @@ namespace Blocks {
         std::optional<Geometry::Cube> c = CubeFactory::getInstance().makeMaterialCube(mat);
         
         if(c.has_value())
-            c.value().setPosition(x, y, z);
+            c.value().setPosition(glm::vec3(x, y, z));
 
         return c;
     }

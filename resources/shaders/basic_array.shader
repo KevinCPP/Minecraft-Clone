@@ -6,11 +6,16 @@ layout (location = 1) in vec3 aTexCoord;
 
 out vec3 vTexCoord;
 
-uniform mat4 uMVPMatrix;
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uProjectionMatrix;
+
+uniform float uScaleFactor;
 
 void main()
 {
-    gl_Position = uMVPMatrix * vec4(aPosition, 1.0);
+    mat4 mvp = uModelMatrix * uViewMatrix * uProjectionMatrix;
+    gl_Position = mvp * vec4(aPosition, scaleFactor);
     vTexCoord = aTexCoord;
 }
 
