@@ -11,16 +11,16 @@ namespace Geometry {
             Vertex(-0.5f, -0.5f, -0.5f, 1, 0, 0),
 
             // right side
-            Vertex( 0.5f, -0.5f, -0.5f, 1, 0, 0), // bottom left
-            Vertex( 0.5f,  0.5f, -0.5f, 1, 1, 0), // bottom right
-            Vertex( 0.5f,  0.5f,  0.5f, 0, 1, 0), // top right
-            Vertex( 0.5f, -0.5f,  0.5f, 0, 0, 0), // top left
+            Vertex( 0.5f,  0.5f,  0.5f, 0, 1, 0),
+            Vertex( 0.5f, -0.5f,  0.5f, 0, 0, 0),
+            Vertex( 0.5f, -0.5f, -0.5f, 1, 0, 0),
+            Vertex( 0.5f,  0.5f, -0.5f, 1, 1, 0),
              
             // back
-            Vertex(-0.5f, -0.5f,  0.5f, 0, 0, 0),
-            Vertex( 0.5f, -0.5f,  0.5f, 1, 0, 0),
             Vertex( 0.5f,  0.5f,  0.5f, 1, 1, 0),
             Vertex(-0.5f,  0.5f,  0.5f, 0, 1, 0),
+            Vertex(-0.5f, -0.5f,  0.5f, 0, 0, 0),
+            Vertex( 0.5f, -0.5f,  0.5f, 1, 0, 0),
             
             // left side
             Vertex(-0.5f, -0.5f,  0.5f, 1, 0, 0),
@@ -29,10 +29,10 @@ namespace Geometry {
             Vertex(-0.5f, -0.5f, -0.5f, 0, 0, 0),
             
             // bottom
-            Vertex(-0.5f, -0.5f, -0.5f, 0, 0, 0),
-            Vertex( 0.5f, -0.5f, -0.5f, 1, 0, 0),
             Vertex( 0.5f, -0.5f,  0.5f, 1, 1, 0),
             Vertex(-0.5f, -0.5f,  0.5f, 0, 1, 0),
+            Vertex(-0.5f, -0.5f, -0.5f, 0, 0, 0),
+            Vertex( 0.5f, -0.5f, -0.5f, 1, 0, 0),
             
             // top
             Vertex(-0.5f,  0.5f,  0.5f, 0, 1, 0),
@@ -154,14 +154,41 @@ namespace Geometry {
         glm::vec3 scale = getScale();
         return scale.y / scale.x;
     }
-
+    
+    // sets the height of the cube
     void Cube::setHeight(float height) {
-        Quad* back = getQuad(Geometry::BACK); 
-        Quad* left = getQuad(Geometry::LEFT);
-        Quad* front = getQuad(Geometry::FRONT);
-        Quad* right = getQuad(Geometry::RIGHT);
+        // first, get the position/scale so we can restore it later
+        glm::vec3 originalPosition = getCenter();
+        glm::vec3 originalScale = getScale();
         
-          
+        // reset to the identity cube
+        resetPosition();
+        
+        // iterate through all the vertices
+        for(auto& q : quads) {
+            for(auto& v : q.vertices) {
+                //get the position and texture coordinates of the vertices
+                glm::vec3 pos = v.getPosition();
+                glm::vec2 texCoords = v.getTextureCoords();
+
+                // for the identity cube, the y-vals range from -0.5 to 0.5, so
+                // if it's above 0, we know it's 0.5 and thus, one of the top vertices.
+                // We need to reduce the heigh while leaving the bottom at the same spot,
+                // so that's why it is done this way.
+                if(pos.y > 0) {
+                    // adjust both height and the texture coords
+                    pos.y = height - 0.5;
+                    // if texture coords aren't adjusted, they'll appear stretched
+                    texCoords.y = height;
+                }
+                // set the new position and texture coords
+                v.setPosition(pos);
+                v.setTextureCoords(texCoords);
+            }
+        }
+        // add the original position as the offset
+        addOffset(originalPosition);
+        setScale(originalScale);
     }
 
     // adds X Y and Z to the position of the cube
@@ -292,6 +319,9 @@ namespace Geometry {
             case BOTTOM:
                 return quads + 4;
         }
+        // in case an invalid direction is passed,
+        // it will simply return the front.
+        return quads + 0;
     }
 
     Quad Cube::copyQuad(Geometry::Direction dir) const {
@@ -309,5 +339,7 @@ namespace Geometry {
             case BOTTOM:
                 return quads[4];
         }
+        // return the front if an invalid direction is passed
+        return quads[0];
     }
 }

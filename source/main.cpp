@@ -69,7 +69,8 @@ int main() {
     std::vector<unsigned int> indexData;
     
 #ifdef ENABLE_TESTS
-    testChunk(vertexData, indexData);
+    TextureArray texArr;
+    testCubeHeight(&texArr, vertexData, indexData);
     std::cout << "test executed" << std::endl;
 #endif
 

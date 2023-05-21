@@ -45,6 +45,8 @@ void testChunk(std::vector<float>& vertexSrc, std::vector<unsigned int>& indexSr
             
             uint16_t thisHeight = noiseMap[x][z];
             for(size_t y = 0; y < thisHeight; y++) {
+                c.setBlock(x, y, z, Blocks::Block(Blocks::DEV));
+                /*
                 if(y < thisHeight - 3) {
                     // set all blocks more than 3 below the max height to stone
                     c.setBlock(x, y, z, Blocks::Block(Blocks::STONE));
@@ -55,6 +57,7 @@ void testChunk(std::vector<float>& vertexSrc, std::vector<unsigned int>& indexSr
                     // set the top block to grass
                     c.setBlock(x, y, z, Blocks::Block(Blocks::GRASS_BLOCK));
                 }
+                */
             }
         }
     }

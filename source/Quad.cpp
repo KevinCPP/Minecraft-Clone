@@ -77,9 +77,13 @@ namespace Geometry {
     }
 
     void Quad::setTextureArrayIndex(float index) {
-        assert(index >= 0.0f && "Z value for Texture Array cannot be zero!");
+        assert(index >= 0.0f && "Z value for Texture Array cannot be less than zero!");
         for(auto& v : vertices)
             v.setTextureArrayIndex(index);
+    }
+
+    float Quad::getTextureArrayIndex() {
+        return vertices[0].getTextureArrayIndex();
     }
 
     void Quad::rotateX() {
@@ -112,10 +116,10 @@ namespace Geometry {
         }
     }
 
-    void setScale(const glm::vec3& scale) {
-        glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scaleFactors);
-        quad.transform(scaleMatrix);
-    }
+//    void setScale(const glm::vec3& scale) {
+//        glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+//        transform(scaleMatrix);
+//    }
 
 
     void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec) {

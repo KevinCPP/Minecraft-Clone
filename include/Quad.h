@@ -32,6 +32,8 @@ namespace Geometry {
 
         // sets the Z value for texture coordinates
         void setTextureArrayIndex(float index);
+        
+        float getTextureArrayIndex();
 
         // rotates the quad around the X, Y, or Z axis respectively.
         void rotateZ();
