@@ -121,11 +121,20 @@ namespace Geometry {
 //        transform(scaleMatrix);
 //    }
 
+//    void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec) {
+//        Utility::warn(!vec.empty(), "vector was not empty!");
+//
+//        for(size_t i = 0; i < numQuads; i++) {
+//            for(size_t j = 0; j < Quad::indices.size(); j++) {
+//                vec.push_back((i * Geometry::VERTICES_PER_QUAD) + Quad::indices[j]);
+//            }
+//        }
+//    }
+    
 
     void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec) {
-        Utility::warn(!vec.empty(), "vector was not empty!");
-
-        for(size_t i = 0; i < numQuads; i++) {
+        size_t initialSize = vec.size();
+        for(size_t i = vec.size(); i < (initialSize + numQuads); i++) {
             for(size_t j = 0; j < Quad::indices.size(); j++) {
                 vec.push_back((i * Geometry::VERTICES_PER_QUAD) + Quad::indices[j]);
             }

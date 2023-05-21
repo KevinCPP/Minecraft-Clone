@@ -25,7 +25,6 @@ void VertexArray::addBuffer(const VertexBuffer& vb, const VertexBufferLayout& la
         
         offset += element.count * VertexBufferElement::getTypeSize(element.type);
     }
-
 }
 
 void VertexArray::bind() const {

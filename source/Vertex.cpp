@@ -1,4 +1,5 @@
 #include "../include/Vertex.h"
+#include "../include/VertexBufferLayout.h"
 
 namespace Geometry {
 
@@ -43,6 +44,7 @@ namespace Geometry {
         setNormal(norm.x, norm.y, norm.z);
     }
 
+    
     float Vertex::getTextureArrayIndex() {
         assert(FLOATS_PER_VERTEX >= 6 && "Vertex::getTextureArrayCoords, FLOATS_PER_VERTEX < 6");
         return data[5];
@@ -84,7 +86,23 @@ namespace Geometry {
         return true;
     }
 
-
+    VertexBufferLayout makeVertexLayout() {
+        VertexBufferLayout layout;
+        if constexpr (FLOATS_PER_VERTEX == 3) {
+            layout.push_float(3);
+        } else if constexpr (FLOATS_PER_VERTEX == 5) {
+            layout.push_float(3);
+            layout.push_float(2);
+        } else if constexpr (FLOATS_PER_VERTEX == 6) {
+            layout.push_float(3);
+            layout.push_float(3);
+        } else if constexpr (FLOATS_PER_VERTEX == 9) {
+            layout.push_float(3);
+            layout.push_float(3);
+            layout.push_float(3);
+        }
+        return layout;
+    }
 
 
 }

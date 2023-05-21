@@ -2,6 +2,8 @@
 #define UTILITY_H
 
 #include <string>
+#include <vector>
+
 
 namespace Utility {
     void log_message(const std::string& msg);
@@ -13,6 +15,7 @@ namespace Utility {
     bool warn(bool condition, const std::string& msg);
     bool error(bool condition, const std::string& msg);
     bool fatal_error(bool condition, const std::string& msg, bool terminate = false);
+
 }
 
 #endif

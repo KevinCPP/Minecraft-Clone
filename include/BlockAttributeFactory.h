@@ -1,7 +1,6 @@
 #ifndef BLOCKATTRIBUTEFACTORY_H
 #define BLOCKATTRIBUTEFACTORY_H
 
-#include "Block.h"
 #include "BlockAttributes.h"
 
 namespace Blocks {

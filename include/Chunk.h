@@ -1,11 +1,15 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
-#include "Cube.h"
+
 #include "World.h"
 #include "Block.h"
-#include "Settings.h"
-#include "CubeFactory.h"
+#include "Shader.h"
+#include "Renderer.h"
+#include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 
 #include <vector>
 #include <optional>
@@ -47,6 +51,14 @@ namespace World {
         
         // store a list of all the available quads in a chunk
         ankerl::unordered_dense::set<visibleQuadData, vqd_hash_avalanching> visibleQuads;
+        
+        // stores the renderer data to be used to render this chunk
+        std::unique_ptr<VertexBuffer> vbo;
+        std::unique_ptr<IndexBuffer> ibo;
+        std::unique_ptr<VertexArray> vao;
+
+        // stores the chunk's position, so that an offset can be added to the renderer data
+        int64_t chunkX, chunkY, chunkZ;
 
         // store pointers to adjacent chunks
         Chunk* adjTop;
@@ -90,14 +102,21 @@ namespace World {
         // updates the visibility at one specific block coordinate. Essentially findVisible() except on one block at x, y, z
         void updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z);
 
+        // sets the chunk's position so that it can add the correct renderer info. Defaults to (0, 0, 0)
+        void setChunkPosition(int64_t cx = 0, int64_t cy = 0, int64_t cz = 0);
+
         // iterates through all of the blocks in the chunk and fills the visibleQuads set with quads that have adjacent transparent blocks
         void findVisible();
 
         // fills the chunk with a given material
         void fill(const Blocks::Material& mat = Blocks::STONE);
-    
+
+        void generateRendererInfo(); 
+
         auto visibleQuadsBegin() const { return visibleQuads.begin(); }
         auto visibleQuadsEnd() const { return visibleQuads.end(); }
+        
+        void render(const Renderer& renderer, const Shader& shader);
     };
 }
 

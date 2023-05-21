@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../include/Parallelepiped.h"
+#include "../include/Cube.h"
 
 void testCubeHeight(TextureArray* texArray, std::vector<float>& vertexSrc, std::vector<unsigned int>& indexSrc) {
     using namespace Blocks;
@@ -7,14 +7,14 @@ void testCubeHeight(TextureArray* texArray, std::vector<float>& vertexSrc, std::
     
     texArray->loadTextures(Settings::TEXTURE_DIRECTORY);
 
-    Parallelepiped p;
+    Cube p;
     p.setTextureArrayIndex(TOP, texArray->getIndex("test_top.bmp"));
     p.setTextureArrayIndex(LEFT, texArray->getIndex("test_left.bmp"));
     p.setTextureArrayIndex(BACK, texArray->getIndex("test_back.bmp"));
     p.setTextureArrayIndex(RIGHT, texArray->getIndex("test_right.bmp"));
     p.setTextureArrayIndex(FRONT, texArray->getIndex("test_front.bmp"));
     p.setTextureArrayIndex(BOTTOM, texArray->getIndex("test_bottom.bmp"));
-    p.setDimensions(glm::vec3(1.0, 0.5, 1.0));
+//    p.setDimensions(glm::vec3(1.0, 0.5, 1.0));
 
     for(auto& q : p.m_Quads) {
         Quad quad = q;

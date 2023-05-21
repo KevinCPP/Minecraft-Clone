@@ -3,6 +3,7 @@
 
 // project headers
 #include "Geometry.h"
+#include "VertexBufferLayout.h"
 
 namespace Geometry {
     struct Vertex {
@@ -38,6 +39,7 @@ namespace Geometry {
         void setTextureCoords(const glm::vec2& uv);
         void setTextureArrayCoords(const glm::vec3& uvz);
         void setNormal(const glm::vec3& norm);
+        
 
         // getters (floats)
         float getTextureArrayIndex();
@@ -52,5 +54,7 @@ namespace Geometry {
         glm::vec3 getTextureArrayCoords() const;
         glm::vec3 getNormal() const;
     }; 
+    
+    VertexBufferLayout makeVertexLayout(); 
 }
 #endif

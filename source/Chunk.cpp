@@ -16,11 +16,14 @@ namespace World {
         adjRight = NULL;
         adjFront = NULL;
         adjBottom = NULL;
+
+        setChunkPosition();
     } 
     
     // constructor that also initializes adjacent chunks
     Chunk::Chunk(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) {
         setAdjacentChunks(top, left, back, right, front, bottom); 
+        setChunkPosition();
     }
     
     // returns true if x, y, and z are inside the bounds of the chunk (less than CHUNK_SIZE)
@@ -210,6 +213,14 @@ namespace World {
     void Chunk::updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z) {
         removeFacesAt(x, y, z); 
         addFacesAt(x, y, z);
+//        generateRendererInfo();
+    }
+
+    void Chunk::setChunkPosition(int64_t cx, int64_t cy, int64_t cz) {
+        chunkX = cx;
+        chunkY = cy;
+        chunkZ = cz;
+//        generateRendererInfo();
     }
 
     void Chunk::findVisible() {
@@ -223,6 +234,8 @@ namespace World {
             // all the visible faces in for the first time.
             addFacesAt(x, y, z);
         }
+        
+        generateRendererInfo();
     }
 
     void Chunk::fill(const Material& mat) {
@@ -234,6 +247,70 @@ namespace World {
         
         // run findVisible
         findVisible();
+    }
+
+    void Chunk::generateRendererInfo() {
+        if(visibleQuads.size() == 0) {
+            std::cout << "visible quads was empty!" << std::endl;
+            return;
+        }
+        // initialize vectors to store the data, and pre-allocate the correct amount of memory
+        // to avoid unnecessary reallocation operations
+        std::vector<float> vertexData(visibleQuads.size() * Geometry::FLOATS_PER_QUAD);
+        std::vector<unsigned int> indexData(visibleQuads.size() * Geometry::Quad::indices.size());
+        vertexData.clear();
+        indexData.clear();
+
+        // initialize variables to be used in the loop, so they don't have to
+        // be unnecessarily re-created each time, simply assigned.
+        Blocks::Material mat;
+        std::optional<Geometry::Cube> thisCube;
+        Quad thisQuad;
+
+        // the offsets to be used to translate the block into local space...
+        int64_t offX = chunkX * CHUNK_SIZE;
+        int64_t offY = chunkY * CHUNK_SIZE;
+        int64_t offZ = chunkZ * CHUNK_SIZE;
+        
+        // iterate through all of the visible quad data
+        for(auto& vqd : visibleQuads) {
+            mat = getBlockMaterial(vqd.x, vqd.y, vqd.z);
+            thisCube = Blocks::Block(mat).getCube(offX + vqd.x, offY + vqd.y, offZ + vqd.z);
+            
+            if(Utility::error(!thisCube.has_value(), "Got a \"Visible Quad\" which is AIR!")) {
+                continue;
+            }
+            
+            thisQuad = thisCube->copyQuad((Geometry::Direction)vqd.face);
+
+            float* ptr = (float*)(&thisQuad);
+            std::copy(ptr, ptr + Geometry::FLOATS_PER_QUAD, std::back_inserter(vertexData));
+        }
+        
+        // fill the indexData vector with the proper index data
+        Geometry::makeIndicesFromQuads(visibleQuads.size(), indexData);         
+
+        if(!vao) {
+            vao = std::make_unique<VertexArray>();
+            VertexBufferLayout layout = Geometry::makeVertexLayout();
+
+            vbo = std::make_unique<VertexBuffer>(vertexData.data(), vertexData.size() * sizeof(float)); 
+            ibo = std::make_unique<IndexBuffer>(indexData.data(), indexData.size());
+
+            vao->addBuffer(*vbo, layout);
+            vao->unbind();
+        }
+        else {
+            vbo->subData(vertexData.data(), vertexData.size() * sizeof(float));
+            ibo->subData(indexData.data(), indexData.size());
+        }
+    }
+
+    void Chunk::render(const Renderer& renderer, const Shader& shader) {
+        if(!vao || !vbo || !ibo) {
+            return;
+        }
+        renderer.draw(*vao, *ibo, shader); 
     }
 }
 
