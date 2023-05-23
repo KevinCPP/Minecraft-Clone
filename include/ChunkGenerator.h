@@ -13,7 +13,9 @@ namespace World {
         ChunkGenerator();
 
         Biome b;
-        void generateChunk(Chunk* chunk, int64_t chunkX, int64_t chunkY, int64_t chunkZ);
+        //void generateChunk(Chunk* chunk, const Geometry::Location& ck);
+        
+        std::shared_ptr<Chunk> generateChunk(const Geometry::Location& ck);
     };
 }
 

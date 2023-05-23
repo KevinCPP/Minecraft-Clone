@@ -16,12 +16,15 @@ namespace World {
         adjRight = NULL;
         adjFront = NULL;
         adjBottom = NULL;
-
+        
+        isDirty = true;
         setChunkPosition();
     } 
     
     // constructor that also initializes adjacent chunks
     Chunk::Chunk(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) {
+        isDirty = true;
+
         setAdjacentChunks(top, left, back, right, front, bottom); 
         setChunkPosition();
     }
@@ -101,24 +104,24 @@ namespace World {
         // This if statement will handle all quads that are inside this chunk and are adjacent to the solid block
         if(!Blocks::isTransparent(cm)) {
             if(x != 0)
-                visibleQuads.erase(visibleQuadData(rx-1, ry, rz, Geometry::RIGHT));
+                visibleQuads.erase(Geometry::QuadLocation(rx-1, ry, rz, Geometry::RIGHT));
             if(y != 0)
-                visibleQuads.erase(visibleQuadData(rx, ry-1, rz, Geometry::TOP));
+                visibleQuads.erase(Geometry::QuadLocation(rx, ry-1, rz, Geometry::TOP));
             if(z != 0)
-                visibleQuads.erase(visibleQuadData(rx, ry, rz-1, Geometry::BACK));
+                visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz-1, Geometry::BACK));
             if(x != CHUNK_SIZE - 1)
-                visibleQuads.erase(visibleQuadData(rx+1, ry, rz, Geometry::LEFT));
+                visibleQuads.erase(Geometry::QuadLocation(rx+1, ry, rz, Geometry::LEFT));
             if(y != CHUNK_SIZE - 1)
-                visibleQuads.erase(visibleQuadData(rx, ry+1, rz, Geometry::BOTTOM));
+                visibleQuads.erase(Geometry::QuadLocation(rx, ry+1, rz, Geometry::BOTTOM));
             if(z != CHUNK_SIZE - 1)
-                visibleQuads.erase(visibleQuadData(rx, ry, rz+1, Geometry::FRONT));
+                visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz+1, Geometry::FRONT));
         } else if (cm == Blocks::AIR) {
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::TOP));
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::LEFT));
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::BACK));
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::RIGHT));
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::FRONT));
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::BOTTOM));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::TOP));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::LEFT));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::BACK));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::RIGHT));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::FRONT));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::BOTTOM));
         }
 
         bool cleftTransparent   = (adjLeft   == NULL || adjLeft->isBlockTransparent(CHUNK_SIZE - 1, y, z));
@@ -131,17 +134,17 @@ namespace World {
         // if we're at the edge and the adjacent chunk does not have a transparent block, erase the face on this block which is
         // facing that solid block, since it would be occluded
         if((x == 0) && !cleftTransparent)
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::LEFT));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::LEFT));
         if((y == 0) && !cbottomTransparent)
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::BOTTOM));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::BOTTOM));
         if((z == 0) && !cfrontTransparent)
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::FRONT));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::FRONT));
         if((x == CHUNK_SIZE - 1) && !crightTransparent)
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::RIGHT));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::RIGHT));
         if((y == CHUNK_SIZE - 1) && !ctopTransparent) 
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::TOP));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::TOP));
         if((z == CHUNK_SIZE - 1) && !cbackTransparent)
-            visibleQuads.erase(visibleQuadData(rx, ry, rz, Geometry::BACK));
+            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::BACK));
     }
 
     void Chunk::addFacesAt(uint16_t x, uint16_t y, uint16_t z) {
@@ -159,17 +162,17 @@ namespace World {
             // we'll deal with edges later, for now, just check the adjacent block in this chunk
             // and add it's corresponding face if it isn't AIR.
             if(x != 0 && volume[x-1][y][z].mat != AIR)
-                visibleQuads.insert(std::move(visibleQuadData(rx-1, ry, rz, Geometry::RIGHT)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(rx-1, ry, rz, Geometry::RIGHT)));
             if(y != 0 && volume[x][y-1][z].mat != AIR)
-                visibleQuads.insert(std::move(visibleQuadData(rx, ry-1, rz, Geometry::TOP)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry-1, rz, Geometry::TOP)));
             if(z != 0 && volume[x][y][z-1].mat != AIR)
-                visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz-1, Geometry::BACK)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz-1, Geometry::BACK)));
             if(x != CHUNK_SIZE - 1 && volume[x+1][y][z].mat != AIR)
-                visibleQuads.insert(std::move(visibleQuadData(rx+1, ry, rz, Geometry::LEFT)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(rx+1, ry, rz, Geometry::LEFT)));
             if(y != CHUNK_SIZE - 1 && volume[x][y+1][z].mat != AIR)
-                visibleQuads.insert(std::move(visibleQuadData(rx, ry+1, rz, Geometry::BOTTOM)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry+1, rz, Geometry::BOTTOM)));
             if(z != CHUNK_SIZE - 1 && volume[x][y][z+1].mat != AIR)
-                visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz+1, Geometry::FRONT)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz+1, Geometry::FRONT)));
             
             // the rest of this function just adds this blocks' faces. If it's air, it will never
             // have a visible face, so we can end the function here.
@@ -197,30 +200,30 @@ namespace World {
         // every other block is visible, so if this block has any adjacent transparent blocks,
         // add the quad that is facing that transparent block to the list of visible quads
         if(leftTransparent || cleftTransparent)
-            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::LEFT)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::LEFT)));
         if(bottomTransparent || cbottomTransparent)
-            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::BOTTOM)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::BOTTOM)));
         if(frontTransparent || cfrontTransparent)
-            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::FRONT)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::FRONT)));
         if(rightTransparent || crightTransparent)
-            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::RIGHT)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::RIGHT)));
         if(topTransparent || ctopTransparent)
-            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::TOP)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::TOP)));
         if(backTransparent || cbackTransparent)
-            visibleQuads.insert(std::move(visibleQuadData(rx, ry, rz, Geometry::BACK))); 
+            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::BACK))); 
     }
 
     void Chunk::updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z) {
         removeFacesAt(x, y, z); 
         addFacesAt(x, y, z);
-//        generateRendererInfo();
+        isDirty = true;
     }
 
     void Chunk::setChunkPosition(int64_t cx, int64_t cy, int64_t cz) {
-        chunkX = cx;
-        chunkY = cy;
-        chunkZ = cz;
-//        generateRendererInfo();
+        chunkPosition.x = cx;
+        chunkPosition.y = cy;
+        chunkPosition.z = cz;
+        isDirty = true;
     }
 
     void Chunk::findVisible() {
@@ -235,7 +238,7 @@ namespace World {
             addFacesAt(x, y, z);
         }
         
-        generateRendererInfo();
+        isDirty = true;
     }
 
     void Chunk::fill(const Material& mat) {
@@ -250,10 +253,12 @@ namespace World {
     }
 
     void Chunk::generateRendererInfo() {
+        // need to check this because if there are no visible quads and we try to make a VAO/VBO/IBO,
+        // we can get an OpenGL error since it expects a VBO to contain an amount of data greater than 0.
         if(visibleQuads.size() == 0) {
-            std::cout << "visible quads was empty!" << std::endl;
             return;
         }
+
         // initialize vectors to store the data, and pre-allocate the correct amount of memory
         // to avoid unnecessary reallocation operations
         std::vector<float> vertexData(visibleQuads.size() * Geometry::FLOATS_PER_QUAD);
@@ -268,9 +273,9 @@ namespace World {
         Quad thisQuad;
 
         // the offsets to be used to translate the block into local space...
-        int64_t offX = chunkX * CHUNK_SIZE;
-        int64_t offY = chunkY * CHUNK_SIZE;
-        int64_t offZ = chunkZ * CHUNK_SIZE;
+        int64_t offX = chunkPosition.x * CHUNK_SIZE;
+        int64_t offY = chunkPosition.y * CHUNK_SIZE;
+        int64_t offZ = chunkPosition.z * CHUNK_SIZE;
         
         // iterate through all of the visible quad data
         for(auto& vqd : visibleQuads) {
@@ -289,27 +294,49 @@ namespace World {
         
         // fill the indexData vector with the proper index data
         Geometry::makeIndicesFromQuads(visibleQuads.size(), indexData);         
-
+        
+        // if the vao has not been initialized
         if(!vao) {
+            // create the vao
             vao = std::make_unique<VertexArray>();
+            // get the vertex buffer layout
             VertexBufferLayout layout = Geometry::makeVertexLayout();
-
+            
+            // generate the vbo and ibo
             vbo = std::make_unique<VertexBuffer>(vertexData.data(), vertexData.size() * sizeof(float)); 
             ibo = std::make_unique<IndexBuffer>(indexData.data(), indexData.size());
-
+            
+            // bind the vbo and layout to the vao
             vao->addBuffer(*vbo, layout);
+            // unbind the vao
             vao->unbind();
         }
         else {
+            // if the VAO has already been initialized, we just need to
+            // substitute new data into the vbo and ibo.
             vbo->subData(vertexData.data(), vertexData.size() * sizeof(float));
             ibo->subData(indexData.data(), indexData.size());
         }
+        
+        // mark as not dirty, as to avoid calling this function again if not necessary.
+        isDirty = false;
     }
-
+    
+    // the chunk maintains it's own IBO and VAO, so it just needs a renderer
+    // and a shader to use for rendering. This function simply renders the chunk's
+    // associated vertex data
     void Chunk::render(const Renderer& renderer, const Shader& shader) {
+        // if it's dirty, update the rendererInfo.
+        if(isDirty)
+            generateRendererInfo(); 
+        
+        // if these don't exist, we can't render (the chunk is probably empty)
+        // so simply return without doing anything
         if(!vao || !vbo || !ibo) {
             return;
         }
+        
+        // draw the chunk
         renderer.draw(*vao, *ibo, shader); 
     }
 }

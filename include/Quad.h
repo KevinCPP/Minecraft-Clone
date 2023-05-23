@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace Geometry {
-
+     
     struct Quad {
         // a quad is just 4 vertices
         Vertex vertices[VERTICES_PER_QUAD];
@@ -63,7 +63,25 @@ namespace Geometry {
         bool operator==(const Quad& other) const;
         bool operator!=(const Quad& other) const;
     };
+    
+    // stores information about the location of a quad and which way it's facing.
+    struct QuadLocation {
+        int16_t x, y, z;
+        uint8_t face;
 
+        QuadLocation(int16_t cx, int16_t cy, int16_t cz, Geometry::Direction dir) : x(cx), y(cy), z(cz), face((uint8_t)dir) { }
+        QuadLocation(int16_t cx, int16_t cy, int16_t cz, uint8_t dir) : x(cx), y(cy), z(cz), face(dir) { } 
+        
+        bool operator==(const QuadLocation& other) const { return x == other.x && y == other.y && z == other.z && face == other.face; }
+    };
+    
+    // hash functor for the QuadLocation struct
+    struct QuadLocation_hash_avalanching {
+        using is_avalanching = void;
+        uint64_t operator()(const QuadLocation& obj) const noexcept;
+    };
+    
+    // given a number of quads and a reference to a vector, it will insert the proper indices into the vector.
     void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec);
 }
 #endif

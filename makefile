@@ -5,7 +5,7 @@ CXX = g++
 CXXFLAGS = -g -std=c++20 -Wall -Wextra -pedantic -Iinclude
 
 # define any libraries to link into executable
-LIBS = -lGLEW -lglfw -lGL
+LIBS = -lGLEW -lglfw -lGL -lboost_system -lboost_filesystem -lboost_thread
 
 # define the C++ source files
 SRCS = $(wildcard source/*.cpp vendor/*.cpp)

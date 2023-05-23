@@ -116,22 +116,6 @@ namespace Geometry {
         }
     }
 
-//    void setScale(const glm::vec3& scale) {
-//        glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
-//        transform(scaleMatrix);
-//    }
-
-//    void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec) {
-//        Utility::warn(!vec.empty(), "vector was not empty!");
-//
-//        for(size_t i = 0; i < numQuads; i++) {
-//            for(size_t j = 0; j < Quad::indices.size(); j++) {
-//                vec.push_back((i * Geometry::VERTICES_PER_QUAD) + Quad::indices[j]);
-//            }
-//        }
-//    }
-    
-
     void makeIndicesFromQuads(size_t numQuads, std::vector<unsigned int>& vec) {
         size_t initialSize = vec.size();
         for(size_t i = vec.size(); i < (initialSize + numQuads); i++) {
@@ -140,8 +124,16 @@ namespace Geometry {
             }
         }
     }
+    
+    // hash function implementation for QuadLocation
+    uint64_t QuadLocation_hash_avalanching::operator()(const QuadLocation& obj) const noexcept {
+        uint64_t result = 0;
+        result ^= ankerl::unordered_dense::detail::wyhash::hash(obj.x);
+        result ^= ankerl::unordered_dense::detail::wyhash::hash(obj.y);
+        result ^= ankerl::unordered_dense::detail::wyhash::hash(obj.z);
+        result ^= ankerl::unordered_dense::detail::wyhash::hash((uint8_t)obj.face);
+        return result;
+    }
 
 }
-
-
 

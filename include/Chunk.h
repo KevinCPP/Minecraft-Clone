@@ -1,10 +1,11 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
-
+#include "Quad.h"
 #include "World.h"
 #include "Block.h"
 #include "Shader.h"
+#include "Location.h"
 #include "Renderer.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
@@ -17,40 +18,13 @@
 
 namespace World {
     
-    // will store data about the visible quad, within the chunk
-    struct visibleQuadData {
-        int16_t x, y, z;
-        uint8_t face;
-
-        visibleQuadData(int16_t cx, int16_t cy, int16_t cz, Geometry::Direction dir) : x(cx), y(cy), z(cz), face((uint8_t)dir) { }
-        visibleQuadData(int16_t cx, int16_t cy, int16_t cz, uint8_t dir) : x(cx), y(cy), z(cz), face(dir) { } 
-        
-        bool operator==(const visibleQuadData& other) const { return x == other.x && y == other.y && z == other.z && face == other.face; }
-        
-        void addOffset(int16_t ox, int16_t oy, int16_t oz) { x += ox; y += oy; z += oz; }
-    };
-    
-    // hashing function implementation 
-    struct vqd_hash_avalanching {
-        using is_avalanching = void;
-
-        auto operator()(const visibleQuadData& obj) const noexcept -> uint64_t {
-            uint64_t result = 0;
-            result ^= ankerl::unordered_dense::detail::wyhash::hash(obj.x);
-            result ^= ankerl::unordered_dense::detail::wyhash::hash(obj.y);
-            result ^= ankerl::unordered_dense::detail::wyhash::hash(obj.z);
-            result ^= ankerl::unordered_dense::detail::wyhash::hash((uint8_t)obj.face);
-            return result;
-        }
-    };
-
     class Chunk {
     private:
         // stores the blocks in the chunk
         Blocks::Block volume[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         
         // store a list of all the available quads in a chunk
-        ankerl::unordered_dense::set<visibleQuadData, vqd_hash_avalanching> visibleQuads;
+        ankerl::unordered_dense::set<Geometry::QuadLocation, vqd_hash_avalanching> visibleQuads;
         
         // stores the renderer data to be used to render this chunk
         std::unique_ptr<VertexBuffer> vbo;
@@ -58,7 +32,8 @@ namespace World {
         std::unique_ptr<VertexArray> vao;
 
         // stores the chunk's position, so that an offset can be added to the renderer data
-        int64_t chunkX, chunkY, chunkZ;
+        // additionally, has a hash function and can be used to store chunks in a hashmap
+        Geometry::Location chunkPosition;
 
         // store pointers to adjacent chunks
         Chunk* adjTop;
@@ -68,6 +43,8 @@ namespace World {
         Chunk* adjFront;
         Chunk* adjBottom;
         
+        bool isDirty;
+
         // will add/remove faces from visibleQuads at x, y, and z. Should both be used when a block is modified.
         void addFacesAt(uint16_t x, uint16_t y, uint16_t z);
         void removeFacesAt(uint16_t x, uint16_t y, uint16_t z);
