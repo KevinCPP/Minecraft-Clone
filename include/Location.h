@@ -6,7 +6,8 @@
 namespace Geometry {
     struct Location {
         int64_t x, y, z;
-
+        
+        Location() : x(0), y(0), z(0) {}
         Location(int64_t X, int64_t Y, int64_t Z) : x(X), y(Y), z(Z) {}
 
         bool operator==(const Location& other) const {
@@ -18,7 +19,7 @@ namespace Geometry {
         using is_avalanching = void;
 
         uint64_t operator()(const Location& obj) const noexcept;
-    }
+    };
 
     
 }

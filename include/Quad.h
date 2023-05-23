@@ -1,6 +1,8 @@
 #ifndef QUAD_H
 #define QUAD_H
 
+#include <ankerl/unordered_dense.h>
+
 // project headers
 #include "Utility.h"
 #include "Vertex.h"

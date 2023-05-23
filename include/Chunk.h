@@ -24,7 +24,7 @@ namespace World {
         Blocks::Block volume[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         
         // store a list of all the available quads in a chunk
-        ankerl::unordered_dense::set<Geometry::QuadLocation, vqd_hash_avalanching> visibleQuads;
+        ankerl::unordered_dense::set<Geometry::QuadLocation, Geometry::QuadLocation_hash_avalanching> visibleQuads;
         
         // stores the renderer data to be used to render this chunk
         std::unique_ptr<VertexBuffer> vbo;
