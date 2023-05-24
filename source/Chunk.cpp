@@ -308,7 +308,7 @@ namespace World {
     // the chunk maintains it's own IBO and VAO, so it just needs a renderer
     // and a shader to use for rendering. This function simply renders the chunk's
     // associated vertex data
-    void Chunk::render(const Renderer& renderer, const Shader& shader) {
+    void Chunk::render(const Renderer& renderer, Shader& shader, glm::vec3 offset) {
         // if it's dirty, update the rendererInfo.
         if(isDirty)
             generateRendererInfo(); 
@@ -317,7 +317,9 @@ namespace World {
         // so simply return without doing anything
         if(!vao || !vbo || !ibo) {
             return;
-        } 
+        }
+
+        shader.setUniform4f("uOffset", offset.x, offset.y, offset.z, 0.0f);
 
         // draw the chunk
         renderer.draw(*vao, *ibo, shader); 

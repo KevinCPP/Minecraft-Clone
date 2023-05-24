@@ -50,8 +50,8 @@ namespace World {
 
         // calculates the distance from the center, of either a given
         // point, or the point stored within a Geometry::Location object.
-        int64_t getDistanceFromCenter(int64_t x, int64_t y, int64_t z);
-        int64_t getDistanceFromCenter(Geometry::Location key);
+        uint64_t getDistanceFromCenter(int64_t x, int64_t y, int64_t z);
+        uint64_t getDistanceFromCenter(Geometry::Location key);
         
         // object that will generate the chunks for us.
         ChunkGenerator generator;

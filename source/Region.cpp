@@ -13,18 +13,18 @@ namespace World {
         centerZ = z;
     }
 
-    int64_t Region::getDistanceFromCenter(int64_t x, int64_t y, int64_t z) {
-        int64_t dx = std::abs(centerX - x);
-        int64_t dy = std::abs(centerY - y);
-        int64_t dz = std::abs(centerZ - z);
+    uint64_t Region::getDistanceFromCenter(int64_t x, int64_t y, int64_t z) {
+        uint64_t dx = std::abs(centerX - x);
+        uint64_t dy = std::abs(centerY - y);
+        uint64_t dz = std::abs(centerZ - z);
         
         // uses this instead of distance formula so we can generate in a "square"
         // pattern around the center point.
         return std::max(std::max(dx, dy), dz);
     }
 
-    int64_t Region::getDistanceFromCenter(Geometry::Location key) {
-        getDistanceFromCenter(key.x, key.y, key.z);
+    uint64_t Region::getDistanceFromCenter(Geometry::Location key) {
+        return getDistanceFromCenter(key.x, key.y, key.z);
     }
 
     void Region::makeQueue(int16_t radius) {
@@ -49,21 +49,20 @@ namespace World {
         reload();
     }
     
-//    void Region::generateChunk() {
-//        if(toGenerate.empty())
-//            return;
-//
-//        Geometry::Location ck = toGenerate.top();
-//        toGenerate.pop();
-//        
-//        std::shared_ptr<Chunk> chunk; 
-//        generator.generateChunk(chunk, ck);
-//
-//        {
-//            std::lock_guard<std::mutex> lock(chunk_map_mutex);
-//            chunk_map.insert({ck, chunk});
-//        }
-//    }
+    void Region::generateChunk() {
+        if(toGenerate.empty())
+            return;
+
+        Geometry::Location ck = toGenerate.top().value;
+        toGenerate.pop();
+        
+        std::shared_ptr<Chunk> chunk = generator.generateChunk(ck);
+
+        {
+            std::lock_guard<std::mutex> lock(chunk_map_mutex);
+            chunks.insert({ck, chunk});
+        }
+    }
 
     void Region::reload() {
         makeQueue(Settings::renderDistance);
@@ -75,9 +74,6 @@ namespace World {
                 ++it;
             }
         }
-        
-        
-            
     }
 }
 

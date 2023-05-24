@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
+#include <ctime>
 
 #include "../vendor/fastnoiselite.h"
 
@@ -97,7 +99,7 @@ int main() {
     shader.setUniformMat4f("uModelMatrix", model);
     shader.setUniformMat4f("uViewMatrix", view); 
     shader.setUniformMat4f("uProjectionMatrix", projection);
-    shader.setUniform1f("uScaleFactor", 16.0f);
+    shader.setUniform1f("uScaleFactor", 64.0f);
 
     Chunk c;
     c.fill();
@@ -109,6 +111,7 @@ int main() {
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     float lastPrint = 0.0f;
+    
     while(!glfwWindowShouldClose(window)) {
         renderer.clear();
         glClearColor(0.35f, 0.8f, 0.95f, 1.0f);
@@ -121,7 +124,7 @@ int main() {
             std::cout << 1.0f / deltaTime << '\n';
         }
         lastFrame = currentFrame;
-
+        
         if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
             cam.processKeyboardInput(Camera::Direction::FRONT, deltaTime);
         if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)

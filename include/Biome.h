@@ -12,6 +12,7 @@ namespace World {
     struct Biome {
         float minTemp, maxTemp;
         int minHeight, maxHeight;
+        
         std::string name;
 
         Biome();
@@ -19,10 +20,10 @@ namespace World {
             : minTemp(mintemp), maxTemp(maxtemp), minHeight(minheight), maxHeight(maxheight), name(n) { }
 
         // returns true if the temp is between minTemp and maxTemp
-        bool isTempRange(float temp);
-        
+        bool isTempRange(float temp) const;
+         
         // gets the noise, and interpolates it to a value between minHeight and maxHeight
-        int getHeight(float noiseVal);
+        int getHeight(float noise) const;
     };
     
     

@@ -92,7 +92,7 @@ namespace World {
         auto visibleQuadsBegin() const { return visibleQuads.begin(); }
         auto visibleQuadsEnd() const { return visibleQuads.end(); }
         
-        void render(const Renderer& renderer, const Shader& shader);
+        void render(const Renderer& renderer, Shader& shader, glm::vec3 offset = glm::vec3(0.0f, 0.0f, 0.0f));
     };
 }
 

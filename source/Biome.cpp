@@ -7,11 +7,11 @@ namespace World {
         maxHeight = 96;
     }
     
-    bool Biome::isTempRange(float temp) {
+    bool Biome::isTempRange(float temp) const {
         return minTemp <= temp && temp <= maxTemp;
     }
     
-    int Biome::getNoiseInterpolate(float noise) {
+    int Biome::getHeight(float noise) const {
         int heightDiff = maxHeight - minHeight;
 
         // outputs are bounded from -1.0 to 1.0, this will make it

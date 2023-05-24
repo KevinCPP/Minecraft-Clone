@@ -13,8 +13,14 @@ namespace World {
         Biome ocean    (MIN_TEMP, MAX_TEMP, 30, 65,  "ocean");
     }
 
+    Biome BiomeFactory::getBiome(Biomes biome) const {
+        if(biome >= NUM_BIOMES) return biomeArray[PLAINS];
+
+        return biomeArray[biome];
+    }
+
     // retrieves a biome from a temperature
-    Biome BiomeFactory::getBiome(float temp) {
+    Biomes BiomeFactory::getBiomeFromTemp(float temp) {
         // if it's out of the temp range, just round to the nearest valid temp
         if(temp > MAX_TEMP) temp = MAX_TEMP;
         if(temp < MIN_TEMP) temp = MIN_TEMP;
@@ -37,7 +43,7 @@ namespace World {
         
         // if there was not a valid biome, just return plains
         if(count == 0)
-            return plains;
+            return PLAINS;
 
         // get a random number between 0 and count-1
         std::uniform_int_distribution<int> distribution(0, count - 1);
@@ -45,7 +51,7 @@ namespace World {
         // return a random element in the list of possible biomes.
         // uses the seed passed to the constructor, so that it will
         // always return the same biome with the same seed.
-        return biomeArray[indices[distribution(generator)]];
+        return (Biomes)indices[distribution(generator)];
     }
     
     // set the seed

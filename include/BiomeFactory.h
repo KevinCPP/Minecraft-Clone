@@ -1,6 +1,7 @@
 #ifndef BIOMEFACTORY_H
 #define BIOMEFACTORY_H
 
+#include <random>
 #include <vector>
 #include <map>
 
@@ -25,15 +26,17 @@ namespace World {
         // constructor. Default seed 1337
         BiomeFactory(int seed = 1337);
 
+        Biome getBiome(Biomes biome) const;
+
         // get a biome.
-        Biome getBiome(float temp);
+        Biomes getBiomeFromTemp(float temp) ;
         
         // set the seed
         void setSeed(int seed);
 
     private:
         // will store all the biomes
-        Biome[NUM_BIOMES] biomeArray;  
+        Biome biomeArray[NUM_BIOMES];  
         
         // generator to retrieve a biome from overlapping temp ranges
         std::default_random_engine generator;
