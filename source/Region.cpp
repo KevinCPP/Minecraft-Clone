@@ -49,21 +49,21 @@ namespace World {
         reload();
     }
     
-    void Region::generateChunk() {
-        if(toGenerate.empty())
-            return;
-
-        Geometry::Location ck = toGenerate.top();
-        toGenerate.pop();
-        
-        std::shared_ptr<Chunk> chunk; 
-        generator.generateChunk(chunk, ck);
-
-        {
-            std::lock_guard<std::mutex> lock(chunk_map_mutex);
-            chunk_map.insert({ck, chunk});
-        }
-    }
+//    void Region::generateChunk() {
+//        if(toGenerate.empty())
+//            return;
+//
+//        Geometry::Location ck = toGenerate.top();
+//        toGenerate.pop();
+//        
+//        std::shared_ptr<Chunk> chunk; 
+//        generator.generateChunk(chunk, ck);
+//
+//        {
+//            std::lock_guard<std::mutex> lock(chunk_map_mutex);
+//            chunk_map.insert({ck, chunk});
+//        }
+//    }
 
     void Region::reload() {
         makeQueue(Settings::renderDistance);

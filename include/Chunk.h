@@ -31,10 +31,6 @@ namespace World {
         std::unique_ptr<IndexBuffer> ibo;
         std::unique_ptr<VertexArray> vao;
 
-        // stores the chunk's position, so that an offset can be added to the renderer data
-        // additionally, has a hash function and can be used to store chunks in a hashmap
-        Geometry::Location chunkPosition;
-
         // store pointers to adjacent chunks
         Chunk* adjTop;
         Chunk* adjLeft;
@@ -67,6 +63,12 @@ namespace World {
         // sets a block, relative to chunk coordinates. 
         bool setBlock(uint16_t x, uint16_t y, uint16_t z, const Blocks::Block& b);
         
+        // sets a block, but does not call updateBlockVisibility; rather, marks it as dirty.
+        // This function is primarily for use in generating chunks where many blocks will be
+        // manipulated to avoid calling updateBlockVisibility each time, but could also be tried
+        // later with player interactions to see if it perfoms better.
+        bool setBlockRaw(uint16_t x, uint16_t y, uint16_t z, const Blocks::Block& b);
+
         // effectively sets the block to AIR. 
         bool removeBlock(uint16_t x, uint16_t y, uint16_t z);
         
@@ -78,9 +80,6 @@ namespace World {
 
         // updates the visibility at one specific block coordinate. Essentially findVisible() except on one block at x, y, z
         void updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z);
-
-        // sets the chunk's position so that it can add the correct renderer info. Defaults to (0, 0, 0)
-        void setChunkPosition(int64_t cx = 0, int64_t cy = 0, int64_t cz = 0);
 
         // iterates through all of the blocks in the chunk and fills the visibleQuads set with quads that have adjacent transparent blocks
         void findVisible();

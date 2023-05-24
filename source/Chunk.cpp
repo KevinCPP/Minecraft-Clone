@@ -18,7 +18,6 @@ namespace World {
         adjBottom = NULL;
         
         isDirty = true;
-        setChunkPosition();
     } 
     
     // constructor that also initializes adjacent chunks
@@ -26,7 +25,6 @@ namespace World {
         isDirty = true;
 
         setAdjacentChunks(top, left, back, right, front, bottom); 
-        setChunkPosition();
     }
     
     // returns true if x, y, and z are inside the bounds of the chunk (less than CHUNK_SIZE)
@@ -61,6 +59,15 @@ namespace World {
         return true;
     }
     
+    bool Chunk::setBlockRaw(uint16_t x, uint16_t y, uint16_t z, const Blocks::Block& b) {
+        if(!isInsideChunkSize(x, y, z))
+            return false;
+
+        volume[x][y][z] = b;
+        isDirty = true;
+        return true;
+    }
+
     // removes a block at a given x, y, and z coordinate (effectively sets it to air)
     bool Chunk::removeBlock(uint16_t x, uint16_t y, uint16_t z) {
         if(!isInsideChunkSize(x, y, z)) 
@@ -91,11 +98,6 @@ namespace World {
     }
 
     void Chunk::removeFacesAt(uint16_t x, uint16_t y, uint16_t z) {
-        // get relative coordinates to use for the quad data
-        // NOTE: removed chunk relative coordinates for now.
-        uint32_t rx = x;
-        uint32_t ry = y;
-        uint32_t rz = z;
         
         // material of the block at x, y ,z
         Blocks::Material cm = volume[x][y][z].mat;
@@ -104,24 +106,24 @@ namespace World {
         // This if statement will handle all quads that are inside this chunk and are adjacent to the solid block
         if(!Blocks::isTransparent(cm)) {
             if(x != 0)
-                visibleQuads.erase(Geometry::QuadLocation(rx-1, ry, rz, Geometry::RIGHT));
+                visibleQuads.erase(Geometry::QuadLocation(x-1, y, z, Geometry::RIGHT));
             if(y != 0)
-                visibleQuads.erase(Geometry::QuadLocation(rx, ry-1, rz, Geometry::TOP));
+                visibleQuads.erase(Geometry::QuadLocation(x, y-1, z, Geometry::TOP));
             if(z != 0)
-                visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz-1, Geometry::BACK));
+                visibleQuads.erase(Geometry::QuadLocation(x, y, z-1, Geometry::BACK));
             if(x != CHUNK_SIZE - 1)
-                visibleQuads.erase(Geometry::QuadLocation(rx+1, ry, rz, Geometry::LEFT));
+                visibleQuads.erase(Geometry::QuadLocation(x+1, y, z, Geometry::LEFT));
             if(y != CHUNK_SIZE - 1)
-                visibleQuads.erase(Geometry::QuadLocation(rx, ry+1, rz, Geometry::BOTTOM));
+                visibleQuads.erase(Geometry::QuadLocation(x, y+1, z, Geometry::BOTTOM));
             if(z != CHUNK_SIZE - 1)
-                visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz+1, Geometry::FRONT));
+                visibleQuads.erase(Geometry::QuadLocation(x, y, z+1, Geometry::FRONT));
         } else if (cm == Blocks::AIR) {
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::TOP));
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::LEFT));
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::BACK));
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::RIGHT));
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::FRONT));
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::BOTTOM));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::TOP));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::LEFT));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::BACK));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::RIGHT));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::FRONT));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::BOTTOM));
         }
 
         bool cleftTransparent   = (adjLeft   == NULL || adjLeft->isBlockTransparent(CHUNK_SIZE - 1, y, z));
@@ -134,27 +136,20 @@ namespace World {
         // if we're at the edge and the adjacent chunk does not have a transparent block, erase the face on this block which is
         // facing that solid block, since it would be occluded
         if((x == 0) && !cleftTransparent)
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::LEFT));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::LEFT));
         if((y == 0) && !cbottomTransparent)
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::BOTTOM));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::BOTTOM));
         if((z == 0) && !cfrontTransparent)
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::FRONT));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::FRONT));
         if((x == CHUNK_SIZE - 1) && !crightTransparent)
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::RIGHT));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::RIGHT));
         if((y == CHUNK_SIZE - 1) && !ctopTransparent) 
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::TOP));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::TOP));
         if((z == CHUNK_SIZE - 1) && !cbackTransparent)
-            visibleQuads.erase(Geometry::QuadLocation(rx, ry, rz, Geometry::BACK));
+            visibleQuads.erase(Geometry::QuadLocation(x, y, z, Geometry::BACK));
     }
 
     void Chunk::addFacesAt(uint16_t x, uint16_t y, uint16_t z) {
-        // same as before, relative coordinates removed from chunk,
-        // but I will leave this here so I can easily add it back later if needed without
-        // modifying any additional lines
-        uint32_t rx = x;
-        uint32_t ry = y;
-        uint32_t rz = z;
-    
         Blocks::Material cm = volume[x][y][z].mat;
         
         // first, if this block is transparent, add all faces that are facing it since those would all be visible
@@ -162,17 +157,17 @@ namespace World {
             // we'll deal with edges later, for now, just check the adjacent block in this chunk
             // and add it's corresponding face if it isn't AIR.
             if(x != 0 && volume[x-1][y][z].mat != AIR)
-                visibleQuads.insert(std::move(Geometry::QuadLocation(rx-1, ry, rz, Geometry::RIGHT)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(x-1, y, z, Geometry::RIGHT)));
             if(y != 0 && volume[x][y-1][z].mat != AIR)
-                visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry-1, rz, Geometry::TOP)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(x, y-1, z, Geometry::TOP)));
             if(z != 0 && volume[x][y][z-1].mat != AIR)
-                visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz-1, Geometry::BACK)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(x, y, z-1, Geometry::BACK)));
             if(x != CHUNK_SIZE - 1 && volume[x+1][y][z].mat != AIR)
-                visibleQuads.insert(std::move(Geometry::QuadLocation(rx+1, ry, rz, Geometry::LEFT)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(x+1, y, z, Geometry::LEFT)));
             if(y != CHUNK_SIZE - 1 && volume[x][y+1][z].mat != AIR)
-                visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry+1, rz, Geometry::BOTTOM)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(x, y+1, z, Geometry::BOTTOM)));
             if(z != CHUNK_SIZE - 1 && volume[x][y][z+1].mat != AIR)
-                visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz+1, Geometry::FRONT)));
+                visibleQuads.insert(std::move(Geometry::QuadLocation(x, y, z+1, Geometry::FRONT)));
             
             // the rest of this function just adds this blocks' faces. If it's air, it will never
             // have a visible face, so we can end the function here.
@@ -200,29 +195,22 @@ namespace World {
         // every other block is visible, so if this block has any adjacent transparent blocks,
         // add the quad that is facing that transparent block to the list of visible quads
         if(leftTransparent || cleftTransparent)
-            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::LEFT)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(x, y, z, Geometry::LEFT)));
         if(bottomTransparent || cbottomTransparent)
-            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::BOTTOM)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(x, y, z, Geometry::BOTTOM)));
         if(frontTransparent || cfrontTransparent)
-            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::FRONT)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(x, y, z, Geometry::FRONT)));
         if(rightTransparent || crightTransparent)
-            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::RIGHT)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(x, y, z, Geometry::RIGHT)));
         if(topTransparent || ctopTransparent)
-            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::TOP)));
+            visibleQuads.insert(std::move(Geometry::QuadLocation(x, y, z, Geometry::TOP)));
         if(backTransparent || cbackTransparent)
-            visibleQuads.insert(std::move(Geometry::QuadLocation(rx, ry, rz, Geometry::BACK))); 
+            visibleQuads.insert(std::move(Geometry::QuadLocation(x, y, z, Geometry::BACK))); 
     }
 
     void Chunk::updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z) {
         removeFacesAt(x, y, z); 
         addFacesAt(x, y, z);
-        isDirty = true;
-    }
-
-    void Chunk::setChunkPosition(int64_t cx, int64_t cy, int64_t cz) {
-        chunkPosition.x = cx;
-        chunkPosition.y = cy;
-        chunkPosition.z = cz;
         isDirty = true;
     }
 
@@ -272,15 +260,10 @@ namespace World {
         std::optional<Geometry::Cube> thisCube;
         Quad thisQuad;
 
-        // the offsets to be used to translate the block into local space...
-        int64_t offX = chunkPosition.x * CHUNK_SIZE;
-        int64_t offY = chunkPosition.y * CHUNK_SIZE;
-        int64_t offZ = chunkPosition.z * CHUNK_SIZE;
-        
         // iterate through all of the visible quad data
         for(auto& vqd : visibleQuads) {
             mat = getBlockMaterial(vqd.x, vqd.y, vqd.z);
-            thisCube = Blocks::Block(mat).getCube(offX + vqd.x, offY + vqd.y, offZ + vqd.z);
+            thisCube = Blocks::Block(mat).getCube(vqd.x, vqd.y, vqd.z);
             
             if(Utility::error(!thisCube.has_value(), "Got a \"Visible Quad\" which is AIR!")) {
                 continue;
@@ -334,8 +317,8 @@ namespace World {
         // so simply return without doing anything
         if(!vao || !vbo || !ibo) {
             return;
-        }
-        
+        } 
+
         // draw the chunk
         renderer.draw(*vao, *ibo, shader); 
     }

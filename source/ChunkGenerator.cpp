@@ -3,7 +3,9 @@
 
 namespace World {
     ChunkGenerator::ChunkGenerator() {
-        b.setNoiseType(FastNoiseLite::NoiseType_Perlin);
+        biomeGenerator.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+        noiseGenerator.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+        
     }
 
 //    void ChunkGenerator::generateChunk(Chunk* chunk, int64_t chunkX, int64_t chunkY, int64_t chunkZ) {
@@ -36,7 +38,12 @@ namespace World {
 
     std::shared_ptr<Chunk> generateChunk(const Geometry::Location& ck) {
         std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
-         
+        
+        for(size_t x = 0; x < CHUNK_SIZE; x++)
+        for(size_t y = 0; y < CHUNK_SIZE; y++)
+        for(size_t z = 0; z < CHUNK_SIZE; z++) {
+                   
+        }
     }
 
 
