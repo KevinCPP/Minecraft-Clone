@@ -55,7 +55,12 @@ namespace World {
         
         // object that will generate the chunks for us.
         ChunkGenerator generator;
+
+        // multi threading stuff
         std::mutex chunk_map_mutex;
+        boost::thread_group workers;
+        std::condition_variable cv;
+        std::atomic<bool> generating;
 
         // stores the center point that we're rendering around
         int64_t centerX;
@@ -64,7 +69,8 @@ namespace World {
     public:
         // initialize a region with x, y, and z coordinates. Defaults to (0, 0, 0).
         Region(int64_t x = 0, int64_t y = 0, int64_t z = 0);
-         
+        ~Region();
+
         // sets the center of the region and reloads it
         void setCenter(int64_t x, int64_t y, int64_t z);
 
@@ -72,7 +78,7 @@ namespace World {
         void reload();
         
         // renders all the chunks in the region
-        void render(const Renderer& renderer, const Shader& shader);
+        void render(const Renderer& renderer, Shader& shader);
     };
 }
 

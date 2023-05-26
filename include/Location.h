@@ -13,6 +13,11 @@ namespace Geometry {
         bool operator==(const Location& other) const {
             return x == other.x && y == other.y && z == other.z;
         }
+    
+        friend std::ostream& operator<<(std::ostream& os, const Location& obj) {
+            os << "(x: " << obj.x << " y: " << obj.y << " z: " << obj.z << ")";
+            return os;
+        }
     };
 
     struct Location_hash_avalanching {

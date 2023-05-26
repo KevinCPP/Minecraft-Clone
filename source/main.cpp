@@ -99,7 +99,7 @@ int main() {
     shader.setUniformMat4f("uModelMatrix", model);
     shader.setUniformMat4f("uViewMatrix", view); 
     shader.setUniformMat4f("uProjectionMatrix", projection);
-    shader.setUniform1f("uScaleFactor", 64.0f);
+    shader.setUniform1f("uScaleFactor", World::CHUNK_SIZE * Settings::renderDistance);
 
     Chunk c;
     c.fill();
@@ -111,7 +111,10 @@ int main() {
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     float lastPrint = 0.0f;
-    
+
+    Region r;
+    r.reload(); 
+
     while(!glfwWindowShouldClose(window)) {
         renderer.clear();
         glClearColor(0.35f, 0.8f, 0.95f, 1.0f);
@@ -150,7 +153,7 @@ int main() {
         // update mvp matrix
         shader.setUniformMat4f("uViewMatrix", cam.getViewMatrix()); 
 
-        c.render(renderer, shader);
+        r.render(renderer, shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

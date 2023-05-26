@@ -3,13 +3,20 @@
 namespace Geometry {
     
     // Constructor that accepts an initializer list of vertices
-    Quad::Quad(std::initializer_list<Vertex> list) {
-        if(list.size() == VERTICES_PER_QUAD) {
-            auto it = list.begin();
-            for(size_t i = 0; i < VERTICES_PER_QUAD && it != list.end(); ++i, ++it) {
-                vertices[i] = *it;
-            }
-        }
+//    Quad::Quad(std::initializer_list<Vertex> list) {
+//        if(list.size() == VERTICES_PER_QUAD) {
+//            auto it = list.begin();
+//            for(size_t i = 0; i < VERTICES_PER_QUAD && it != list.end(); ++i, ++it) {
+//                vertices[i] = *it;
+//            }
+//        }
+//    }
+
+    Quad::Quad(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4) {
+        vertices[0] = v1;
+        vertices[1] = v2;
+        vertices[2] = v3;
+        vertices[3] = v4;
     }
 
     // Constructor that accepts an array of vertices
@@ -112,7 +119,9 @@ namespace Geometry {
 
     void Quad::addOffset(const glm::vec3& offset) {
         for(auto& v : vertices) {
-            v.setPosition(v.getPosition() + offset);
+            v.data[0] += offset.x;
+            v.data[1] += offset.y;
+            v.data[2] += offset.z;
         }
     }
 

@@ -38,9 +38,9 @@ namespace World {
         Chunk* adjRight;
         Chunk* adjFront;
         Chunk* adjBottom;
-        
-        bool isDirty;
 
+        bool isDirty;
+            
         // will add/remove faces from visibleQuads at x, y, and z. Should both be used when a block is modified.
         void addFacesAt(uint16_t x, uint16_t y, uint16_t z);
         void removeFacesAt(uint16_t x, uint16_t y, uint16_t z);

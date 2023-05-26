@@ -11,6 +11,21 @@ namespace World {
         centerX = x;
         centerY = y;
         centerZ = z;
+        
+        generating.store(true);
+        for(size_t i = 0; i < boost::thread::hardware_concurrency(); i++) {
+            workers.create_thread([this] {
+                while(generating.load()) {
+                    generateChunk();
+                }
+            });
+        }
+    }
+
+    Region::~Region() {
+        generating.store(false);
+        cv.notify_all();
+        workers.join_all();
     }
 
     uint64_t Region::getDistanceFromCenter(int64_t x, int64_t y, int64_t z) {
@@ -50,14 +65,17 @@ namespace World {
     }
     
     void Region::generateChunk() {
-        if(toGenerate.empty())
-            return;
-
-        Geometry::Location ck = toGenerate.top().value;
-        toGenerate.pop();
-        
+        Geometry::Location ck;
+        {
+            std::unique_lock<std::mutex> lock(chunk_map_mutex);
+            cv.wait(lock, [this]{ return !generating.load() || !toGenerate.empty(); });
+            if(!generating.load() && toGenerate.empty()) 
+                return;
+            
+            ck = toGenerate.top().value;
+            toGenerate.pop();
+        }
         std::shared_ptr<Chunk> chunk = generator.generateChunk(ck);
-
         {
             std::lock_guard<std::mutex> lock(chunk_map_mutex);
             chunks.insert({ck, chunk});
@@ -73,6 +91,21 @@ namespace World {
             } else {
                 ++it;
             }
+        }
+        
+        cv.notify_all(); 
+    }
+
+    void Region::render(const Renderer& renderer, Shader& shader) {
+        std::lock_guard<std::mutex> lock(chunk_map_mutex);
+        
+        Geometry::Location off;
+        glm::vec3 vecOffset;
+        for(const auto& pair : chunks) {
+            off = pair.first;
+            vecOffset = glm::vec3(off.x, off.y, off.z);
+            
+            pair.second->render(renderer, shader, vecOffset);
         }
     }
 }

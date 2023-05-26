@@ -33,17 +33,17 @@ namespace World {
             worldZ = chunkOffsetZ + z;
             chunk->setBlockRaw(x, y, z, characteristic(noiseGenerator, biomeFactory, worldX, worldY, worldZ));
         }
-
+        chunk->findVisible();
         return chunk;
     }
 
     std::shared_ptr<Chunk> ChunkGenerator::generateChunk(const Geometry::Location& ck) {
-        std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
-        float temp = biomeGenerator.GetNoise((float)ck.x, (float)ck.z);
-        temp *= 50;
-        Biomes biome = biomeFactory.getBiomeFromTemp(temp);
-
-        switch(biome) {
+        //std::shared_ptr<Chunk> chunk = std::make_shared<Chunk>();
+        //float temp = biomeGenerator.GetNoise((float)ck.x, (float)ck.z);
+        //temp *= 50;
+        //Biomes biome = biomeFactory.getBiomeFromTemp(temp);
+        
+        switch(PLAINS) {
             case PLAINS:
                 return generate_base(ck, plains_characteristic);
             case DESERT:

@@ -76,95 +76,54 @@ namespace Geometry {
         float x = m_Dimensions.x;
         float y = m_Dimensions.y;
         float z = m_Dimensions.z;
-//        Vertex vertices[VERTICES_PER_CUBE] = {
-//
-//            // front
-//            Vertex(   -0.5f, y - 0.5f,    -0.5f,    x,    y,    0), // top left
-//            Vertex(x - 0.5f, y - 0.5f,    -0.5f,    0,    y,    0), // top right
-//            Vertex(x - 0.5f,    -0.5f,    -0.5f,    0,    0,    0), // bottom right
-//            Vertex(   -0.5f,    -0.5f,    -0.5f,    x,    0,    0), // bottom left
-//
-//            // right side
-//            Vertex(x - 0.5f, y - 0.5f, z - 0.5f,    0,    y,    0),
-//            Vertex(x - 0.5f,    -0.5f, z - 0.5f,    0,    0,    0),
-//            Vertex(x - 0.5f,    -0.5f,    -0.5f,    z,    0,    0),
-//            Vertex(x - 0.5f, y - 0.5f,    -0.5f,    z,    y,    0),
-//             
-//            // back
-//            Vertex(x - 0.5f, y - 0.5f, z - 0.5f,    x,    y,    0),
-//            Vertex(   -0.5f, y - 0.5f, z - 0.5f,    0,    y,    0),
-//            Vertex(   -0.5f,    -0.5f, z - 0.5f,    0,    0,    0),
-//            Vertex(x - 0.5f,    -0.5f, z - 0.5f,    x,    0,    0),
-//            
-//            // left side
-//            Vertex(   -0.5f,    -0.5f, z - 0.5f,    z,    0,    0),
-//            Vertex(   -0.5f, y - 0.5f, z - 0.5f,    z,    y,    0),
-//            Vertex(   -0.5f, y - 0.5f,    -0.5f,    0,    y,    0),
-//            Vertex(   -0.5f,    -0.5f,    -0.5f,    0,    0,    0),
-//            
-//            // bottom
-//            Vertex(x - 0.5f,    -0.5f, z - 0.5f,    x,    z,    0),
-//            Vertex(   -0.5f,    -0.5f, z - 0.5f,    0,    z,    0),
-//            Vertex(   -0.5f,    -0.5f,    -0.5f,    0,    0,    0),
-//            Vertex(x - 0.5f,    -0.5f,    -0.5f,    x,    0,    0),
-//            
-//            // top
-//            Vertex(   -0.5f, y - 0.5f, z - 0.5f,    0,    z,    0),
-//            Vertex(x - 0.5f, y - 0.5f, z - 0.5f,    x,    z,    0),
-//            Vertex(x - 0.5f, y - 0.5f,    -0.5f,    x,    0,    0),
-//            Vertex(   -0.5f, y - 0.5f,    -0.5f,    0,    0,    0),
-//        };
-        
         float i = m_Quads[FRONT].getTextureArrayIndex();
+
         m_Quads[FRONT] = {
-            Vertex(   -0.5f, y - 0.5f,    -0.5f,    x,    y,    i), // top left
-            Vertex(x - 0.5f, y - 0.5f,    -0.5f,    0,    y,    i), // top right
-            Vertex(x - 0.5f,    -0.5f,    -0.5f,    0,    0,    i), // bottom right
-            Vertex(   -0.5f,    -0.5f,    -0.5f,    x,    0,    i), // bottom left
+            Vertex(m_Center.x +    -0.5f, m_Center.y + y - 0.5f, m_Center.z +    -0.5f,    x,    y,    i), // top left
+            Vertex(m_Center.x + x - 0.5f, m_Center.y + y - 0.5f, m_Center.z +    -0.5f,    0,    y,    i), // top right
+            Vertex(m_Center.x + x - 0.5f, m_Center.y +    -0.5f, m_Center.z +    -0.5f,    0,    0,    i), // bottom right
+            Vertex(m_Center.x +    -0.5f, m_Center.y +    -0.5f, m_Center.z +    -0.5f,    x,    0,    i), // bottom left
         };
         
         i = m_Quads[RIGHT].getTextureArrayIndex();
         m_Quads[RIGHT] = {
-            Vertex(x - 0.5f, y - 0.5f, z - 0.5f,    0,    y,    i),
-            Vertex(x - 0.5f,    -0.5f, z - 0.5f,    0,    0,    i),
-            Vertex(x - 0.5f,    -0.5f,    -0.5f,    z,    0,    i),
-            Vertex(x - 0.5f, y - 0.5f,    -0.5f,    z,    y,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y + y - 0.5f, m_Center.z + z - 0.5f,    0,    y,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y +    -0.5f, m_Center.z + z - 0.5f,    0,    0,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y +    -0.5f, m_Center.z +    -0.5f,    z,    0,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y + y - 0.5f, m_Center.z +    -0.5f,    z,    y,    i),
         };
         
         i = m_Quads[BACK].getTextureArrayIndex();
         m_Quads[BACK] = {
-            Vertex(x - 0.5f, y - 0.5f, z - 0.5f,    x,    y,    i),
-            Vertex(   -0.5f, y - 0.5f, z - 0.5f,    0,    y,    i),
-            Vertex(   -0.5f,    -0.5f, z - 0.5f,    0,    0,    i),
-            Vertex(x - 0.5f,    -0.5f, z - 0.5f,    x,    0,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y + y - 0.5f, m_Center.z + z - 0.5f,    x,    y,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y + y - 0.5f, m_Center.z + z - 0.5f,    0,    y,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y +    -0.5f, m_Center.z + z - 0.5f,    0,    0,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y +    -0.5f, m_Center.z + z - 0.5f,    x,    0,    i),
         };
 
         i = m_Quads[LEFT].getTextureArrayIndex();
         m_Quads[LEFT] = {
-            Vertex(   -0.5f,    -0.5f, z - 0.5f,    z,    0,    i),
-            Vertex(   -0.5f, y - 0.5f, z - 0.5f,    z,    y,    i),
-            Vertex(   -0.5f, y - 0.5f,    -0.5f,    0,    y,    i),
-            Vertex(   -0.5f,    -0.5f,    -0.5f,    0,    0,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y +    -0.5f, m_Center.z + z - 0.5f,    z,    0,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y + y - 0.5f, m_Center.z + z - 0.5f,    z,    y,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y + y - 0.5f, m_Center.z +    -0.5f,    0,    y,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y +    -0.5f, m_Center.z +    -0.5f,    0,    0,    i),
         };
 
         i = m_Quads[BOTTOM].getTextureArrayIndex();
         m_Quads[BOTTOM] = {
-            Vertex(x - 0.5f,    -0.5f, z - 0.5f,    x,    z,    i),
-            Vertex(   -0.5f,    -0.5f, z - 0.5f,    0,    z,    i),
-            Vertex(   -0.5f,    -0.5f,    -0.5f,    0,    0,    i),
-            Vertex(x - 0.5f,    -0.5f,    -0.5f,    x,    0,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y +    -0.5f, m_Center.z + z - 0.5f,    x,    z,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y +    -0.5f, m_Center.z + z - 0.5f,    0,    z,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y +    -0.5f, m_Center.z +    -0.5f,    0,    0,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y +    -0.5f, m_Center.z +    -0.5f,    x,    0,    i),
         };
         
         i = m_Quads[TOP].getTextureArrayIndex();
         m_Quads[TOP] = {
-            Vertex(   -0.5f, y - 0.5f, z - 0.5f,    0,    z,    i),
-            Vertex(x - 0.5f, y - 0.5f, z - 0.5f,    x,    z,    i),
-            Vertex(x - 0.5f, y - 0.5f,    -0.5f,    x,    0,    i),
-            Vertex(   -0.5f, y - 0.5f,    -0.5f,    0,    0,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y + y - 0.5f, m_Center.z + z - 0.5f,    0,    z,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y + y - 0.5f, m_Center.z + z - 0.5f,    x,    z,    i),
+            Vertex(m_Center.x + x - 0.5f, m_Center.y + y - 0.5f, m_Center.z +    -0.5f,    x,    0,    i),
+            Vertex(m_Center.x +    -0.5f, m_Center.y + y - 0.5f, m_Center.z +    -0.5f,    0,    0,    i),
         };
-
-        for(auto& q : m_Quads)
-            q.addOffset(m_Center);
     }
 }
 

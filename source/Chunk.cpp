@@ -17,13 +17,15 @@ namespace World {
         adjFront = NULL;
         adjBottom = NULL;
         
-        isDirty = true;
+        // when a chunk is first generated, it is full of air.
+        // That means it won't be rendered, and since the VBO is
+        // initially empty, that means it is not dirty.
+        isDirty = false;
     } 
     
     // constructor that also initializes adjacent chunks
     Chunk::Chunk(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) {
-        isDirty = true;
-
+        isDirty = false;
         setAdjacentChunks(top, left, back, right, front, bottom); 
     }
     
@@ -58,13 +60,14 @@ namespace World {
         updateBlockVisibility(x, y, z);
         return true;
     }
-    
+   
+    // pretty much the only function that marks it as dirty
     bool Chunk::setBlockRaw(uint16_t x, uint16_t y, uint16_t z, const Blocks::Block& b) {
         if(!isInsideChunkSize(x, y, z))
             return false;
-
-        volume[x][y][z] = b;
+        
         isDirty = true;
+        volume[x][y][z] = b;
         return true;
     }
 
@@ -211,7 +214,7 @@ namespace World {
     void Chunk::updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z) {
         removeFacesAt(x, y, z); 
         addFacesAt(x, y, z);
-        isDirty = true;
+        generateRendererInfo();
     }
 
     void Chunk::findVisible() {
@@ -225,8 +228,6 @@ namespace World {
             // all the visible faces in for the first time.
             addFacesAt(x, y, z);
         }
-        
-        isDirty = true;
     }
 
     void Chunk::fill(const Material& mat) {
@@ -300,27 +301,26 @@ namespace World {
             vbo->subData(vertexData.data(), vertexData.size() * sizeof(float));
             ibo->subData(indexData.data(), indexData.size());
         }
-        
-        // mark as not dirty, as to avoid calling this function again if not necessary.
-        isDirty = false;
     }
     
     // the chunk maintains it's own IBO and VAO, so it just needs a renderer
     // and a shader to use for rendering. This function simply renders the chunk's
     // associated vertex data
     void Chunk::render(const Renderer& renderer, Shader& shader, glm::vec3 offset) {
-        // if it's dirty, update the rendererInfo.
-        if(isDirty)
-            generateRendererInfo(); 
-        
+        // if it's dirty, find the visible quads and generate renderer info
+        if(isDirty) {
+            findVisible();
+            generateRendererInfo();
+            isDirty = false;
+        }
         // if these don't exist, we can't render (the chunk is probably empty)
         // so simply return without doing anything
         if(!vao || !vbo || !ibo) {
             return;
         }
 
-        shader.setUniform4f("uOffset", offset.x, offset.y, offset.z, 0.0f);
-
+        shader.setUniform4f("uOffset", offset.x * CHUNK_SIZE, offset.y * CHUNK_SIZE, offset.z * CHUNK_SIZE, 0.0f);
+        
         // draw the chunk
         renderer.draw(*vao, *ibo, shader); 
     }
