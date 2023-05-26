@@ -76,6 +76,7 @@ namespace World {
             toGenerate.pop();
         }
         std::shared_ptr<Chunk> chunk = generator.generateChunk(ck);
+        chunk->setWorldPosition(ck.x, ck.y, ck.z);
         {
             std::lock_guard<std::mutex> lock(chunk_map_mutex);
             chunks.insert({ck, chunk});
@@ -96,16 +97,18 @@ namespace World {
         cv.notify_all(); 
     }
 
-    void Region::render(const Renderer& renderer, Shader& shader) {
+    void Region::render(const Renderer& renderer, Shader& shader, const Geometry::Frustum& frustum, bool frustumCulling) {
         std::lock_guard<std::mutex> lock(chunk_map_mutex);
-        
-        Geometry::Location off;
-        glm::vec3 vecOffset;
+
         for(const auto& pair : chunks) {
-            off = pair.first;
-            vecOffset = glm::vec3(off.x, off.y, off.z);
-            
-            pair.second->render(renderer, shader, vecOffset);
+            if(frustumCulling) {
+                if(pair.second->isFrustum(frustum)) {
+                    pair.second->render(renderer, shader);
+                }
+            } else {
+                pair.second->render(renderer, shader);
+            }
+
         }
     }
 }

@@ -13,6 +13,7 @@
 #include "Cube.h"
 #include "World.h"
 #include "Chunk.h"
+#include "Frustum.h"
 #include "Settings.h"
 #include "CubeFactory.h"
 #include "ChunkGenerator.h"
@@ -78,7 +79,7 @@ namespace World {
         void reload();
         
         // renders all the chunks in the region
-        void render(const Renderer& renderer, Shader& shader);
+        void render(const Renderer& renderer, Shader& shader, const Geometry::Frustum& frustum, bool frustumCulling = true);
     };
 }
 

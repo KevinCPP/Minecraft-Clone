@@ -1,4 +1,5 @@
 #include "../include/Chunk.h"
+#include "../include/Frustum.h"
 #include "../include/Settings.h"
 
 using namespace Blocks;
@@ -90,6 +91,10 @@ namespace World {
         return Blocks::isTransparent(volume[x][y][z].mat);
     }
 
+    bool Chunk::isFrustum(const Frustum& frustum) const {
+        return frustum.isInsideFrustum(aabb);
+    }
+
     // simply sets pointers to the adjacent chunks. NULL is acceptable
     void Chunk::setAdjacentChunks(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom) {
         adjTop = top;
@@ -98,6 +103,15 @@ namespace World {
         adjRight = right;
         adjFront = front;
         adjBottom = bottom;
+    }
+
+    void Chunk::setWorldPosition(int64_t x, int64_t y, int64_t z) {
+        worldX = x;
+        worldY = y;
+        worldZ = z;
+
+        aabb.min = glm::vec3(x, y, z);
+        aabb.max = glm::vec3(x + CHUNK_SIZE, y + CHUNK_SIZE, z + CHUNK_SIZE);
     }
 
     void Chunk::removeFacesAt(uint16_t x, uint16_t y, uint16_t z) {
@@ -319,7 +333,7 @@ namespace World {
             return;
         }
 
-        shader.setUniform4f("uOffset", offset.x * CHUNK_SIZE, offset.y * CHUNK_SIZE, offset.z * CHUNK_SIZE, 0.0f);
+        shader.setUniform4f("uOffset", (worldX + offset.x) * CHUNK_SIZE, (worldY + offset.y) * CHUNK_SIZE, (worldZ + offset.z) * CHUNK_SIZE, 0.0f);
         
         // draw the chunk
         renderer.draw(*vao, *ibo, shader); 

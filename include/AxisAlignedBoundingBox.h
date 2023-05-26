@@ -14,6 +14,7 @@ namespace Geometry {
         AxisAlignedBoundingBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 
         bool intersects(const AxisAlignedBoundingBox& other) const;
+        bool intersectsFrustum(const glm::mat4& viewProjectionMatrix, float scaleFactor = 1.0f) const;
     };
 
 }

@@ -5,12 +5,14 @@
 #include "World.h"
 #include "Block.h"
 #include "Shader.h"
+#include "Frustum.h"
 #include "Location.h"
 #include "Renderer.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
+#include "AxisAlignedBoundingBox.h"
 
 #include <vector>
 #include <optional>
@@ -40,14 +42,17 @@ namespace World {
         Chunk* adjBottom;
 
         bool isDirty;
-            
+       
+        Geometry::AxisAlignedBoundingBox aabb;
+        int64_t worldX, worldY, worldZ;
+
         // will add/remove faces from visibleQuads at x, y, and z. Should both be used when a block is modified.
         void addFacesAt(uint16_t x, uint16_t y, uint16_t z);
         void removeFacesAt(uint16_t x, uint16_t y, uint16_t z);
     public:
         // default constructor
         Chunk();
-        
+         
         // initializes adjacent chunks
         Chunk(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom);
 
@@ -75,8 +80,14 @@ namespace World {
         // will check to see if a given block in the chunk is transparent
         bool isBlockTransparent(uint16_t x, uint16_t y, uint16_t z) const;
 
+        // returns true if the chunk is in the view projection matrix
+        bool isFrustum(const Geometry::Frustum& frustum) const;
+
         // sets the adjacent chunk pointers
         void setAdjacentChunks(Chunk* top, Chunk* left, Chunk* back, Chunk* right, Chunk* front, Chunk* bottom);
+        
+        // sets the position in world space coordinates
+        void setWorldPosition(int64_t x, int64_t y, int64_t z);
 
         // updates the visibility at one specific block coordinate. Essentially findVisible() except on one block at x, y, z
         void updateBlockVisibility(uint16_t x, uint16_t y, uint16_t z);

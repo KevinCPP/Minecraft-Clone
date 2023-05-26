@@ -17,6 +17,7 @@
 #include "../include/Vertex.h"
 #include "../include/Camera.h"
 #include "../include/Region.h"
+#include "../include/Frustum.h"
 #include "../include/Texture.h"
 #include "../include/Settings.h"
 #include "../include/Renderer.h"
@@ -93,11 +94,10 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)Settings::ResolutionX / (float)Settings::ResolutionY, 0.001f, 100.0f);
 
     shader.setUniformMat4f("uModelMatrix", model);
-    shader.setUniformMat4f("uViewMatrix", view); 
     shader.setUniformMat4f("uProjectionMatrix", projection);
     shader.setUniform1f("uScaleFactor", World::CHUNK_SIZE * Settings::renderDistance);
 
@@ -153,7 +153,7 @@ int main() {
         // update mvp matrix
         shader.setUniformMat4f("uViewMatrix", cam.getViewMatrix()); 
 
-        r.render(renderer, shader);
+        r.render(renderer, shader, Geometry::Frustum(projection * cam.getViewMatrix() * model), true);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
