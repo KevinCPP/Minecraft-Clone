@@ -4,3 +4,5 @@ test_app
 app
 todo
 /old
+gmon.out
+analysis.txt
